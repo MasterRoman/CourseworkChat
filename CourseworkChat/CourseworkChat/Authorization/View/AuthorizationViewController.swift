@@ -43,7 +43,7 @@ class AuthorizationViewController: UIViewController {
     private func setupLoginObserver(){
         let nameValidation = self.loginTextField
             .rx.text
-            .map({($0!.count > 6)})
+            .map({($0!.count > 3)})
             .share(replay: 1)
         
         let pwdValidation = passwordTextField
