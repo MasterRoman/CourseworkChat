@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ChatId" id="cI6-fH-rJv" customClass="ChatTableViewCell" customModule="CourseworkChat" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="70"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="cI6-fH-rJv" id="OXQ-Kc-c8I">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="70"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="tVR-bY-aKu">
+                        <rect key="frame" x="8" y="8" width="54" height="54"/>
+                        <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="54" id="0vR-yZ-xer"/>
+                            <constraint firstAttribute="width" secondItem="tVR-bY-aKu" secondAttribute="height" multiplier="1:1" id="XFL-fk-eVU"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                <integer key="value" value="5"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                        </userDefinedRuntimeAttributes>
+                    </imageView>
+                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="2" translatesAutoresizingMaskIntoConstraints="NO" id="EK5-6H-f3D">
+                        <rect key="frame" x="70" y="8" width="242" height="54"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="NHb-4N-sLC">
+                                <rect key="frame" x="0.0" y="0.0" width="242" height="17"/>
+                                <subviews>
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Roma" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FZR-8G-2Fh">
+                                        <rect key="frame" x="0.0" y="0.0" width="187" height="17"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="17" id="PPh-cS-iyD"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="12:50" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2DG-Ce-6Z4">
+                                        <rect key="frame" x="192" y="0.0" width="50" height="17"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="50" id="Z3c-bV-fQb"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="12"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="HEllo How are you" lineBreakMode="middleTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gdK-Mp-lWW">
+                                <rect key="frame" x="0.0" y="19" width="242" height="35"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                <color key="textColor" systemColor="secondaryLabelColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="NHb-4N-sLC" firstAttribute="leading" secondItem="EK5-6H-f3D" secondAttribute="leading" id="0sa-Ok-pHG"/>
+                            <constraint firstAttribute="trailing" secondItem="gdK-Mp-lWW" secondAttribute="trailing" id="AJF-FM-Fk7"/>
+                            <constraint firstAttribute="trailing" secondItem="NHb-4N-sLC" secondAttribute="trailing" id="SZk-c2-Zti"/>
+                            <constraint firstItem="gdK-Mp-lWW" firstAttribute="leading" secondItem="EK5-6H-f3D" secondAttribute="leading" id="zTK-Sp-1aM"/>
+                        </constraints>
+                    </stackView>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="EK5-6H-f3D" firstAttribute="top" secondItem="OXQ-Kc-c8I" secondAttribute="top" constant="8" id="IRv-IZ-ENp"/>
+                    <constraint firstItem="tVR-bY-aKu" firstAttribute="top" secondItem="OXQ-Kc-c8I" secondAttribute="top" constant="8" id="Ni8-Ro-tuK"/>
+                    <constraint firstAttribute="bottom" secondItem="EK5-6H-f3D" secondAttribute="bottom" constant="8" id="dxI-lN-X0i"/>
+                    <constraint firstItem="tVR-bY-aKu" firstAttribute="leading" secondItem="OXQ-Kc-c8I" secondAttribute="leading" constant="8" id="e9b-2Q-0Ic"/>
+                    <constraint firstAttribute="trailing" secondItem="EK5-6H-f3D" secondAttribute="trailing" constant="8" id="hWz-MR-Xdd"/>
+                    <constraint firstItem="EK5-6H-f3D" firstAttribute="leading" secondItem="tVR-bY-aKu" secondAttribute="trailing" constant="8" id="nVN-Mf-hPg"/>
+                    <constraint firstAttribute="bottom" secondItem="tVR-bY-aKu" secondAttribute="bottom" constant="8" id="txu-r1-88I"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="dialogIconImageView" destination="tVR-bY-aKu" id="vIe-ri-1Yw"/>
+                <outlet property="dialogTitleLabel" destination="FZR-8G-2Fh" id="KNj-ch-M74"/>
+                <outlet property="lastMessagePreviewLabel" destination="gdK-Mp-lWW" id="Cp7-K5-kwL"/>
+                <outlet property="lastMessageTimeLabel" destination="2DG-Ce-6Z4" id="uHP-4A-wAe"/>
+            </connections>
+            <point key="canvasLocation" x="43" y="144"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <systemColor name="secondaryLabelColor">
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>
