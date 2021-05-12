@@ -30,7 +30,7 @@ class ChatTableViewCell: UITableViewCell {
         dialogIconImageView.layer.borderWidth = 1.0
         dialogIconImageView.layer.masksToBounds = false
         dialogIconImageView.layer.borderColor = UIColor.white.cgColor
-        dialogIconImageView.layer.cornerRadius = contactIconImageView.frame.size.width / 2
+        dialogIconImageView.layer.cornerRadius = dialogIconImageView.frame.size.width / 2
         dialogIconImageView.clipsToBounds = true
     }
     
