@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ContactId" id="G9E-ax-X6q" customClass="ContactsTableViewCell" customModule="CourseworkChat" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="70"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="G9E-ax-X6q" id="rrL-4N-nzk">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="70"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="B2D-yG-UXb">
+                        <rect key="frame" x="8" y="8" width="54" height="54"/>
+                        <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="54" id="7Pt-Mf-cJF"/>
+                            <constraint firstAttribute="width" secondItem="B2D-yG-UXb" secondAttribute="height" multiplier="1:1" id="yg7-qz-lOg"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                <integer key="value" value="5"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                        </userDefinedRuntimeAttributes>
+                    </imageView>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Roma" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lDs-2L-JjK">
+                        <rect key="frame" x="70" y="8" width="242" height="25"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="25" id="pjq-P8-LfO"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="bottom" secondItem="B2D-yG-UXb" secondAttribute="bottom" constant="8" id="1df-3H-KWQ"/>
+                    <constraint firstItem="lDs-2L-JjK" firstAttribute="top" secondItem="rrL-4N-nzk" secondAttribute="top" constant="8" id="VY0-5t-B0G"/>
+                    <constraint firstItem="B2D-yG-UXb" firstAttribute="top" secondItem="rrL-4N-nzk" secondAttribute="top" constant="8" id="YgX-MA-EoS"/>
+                    <constraint firstItem="lDs-2L-JjK" firstAttribute="leading" secondItem="B2D-yG-UXb" secondAttribute="trailing" constant="8" id="dN9-bS-ltz"/>
+                    <constraint firstAttribute="trailing" secondItem="lDs-2L-JjK" secondAttribute="trailing" constant="8" id="tD7-xj-xdd"/>
+                    <constraint firstItem="B2D-yG-UXb" firstAttribute="leading" secondItem="rrL-4N-nzk" secondAttribute="leading" constant="8" id="yPQ-Gx-96L"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="contactIconImageView" destination="B2D-yG-UXb" id="Ctw-mX-PXZ"/>
+                <outlet property="contactNameLabel" destination="lDs-2L-JjK" id="yzp-QQ-G79"/>
+            </connections>
+            <point key="canvasLocation" x="43" y="144"/>
+        </tableViewCell>
+    </objects>
+</document>

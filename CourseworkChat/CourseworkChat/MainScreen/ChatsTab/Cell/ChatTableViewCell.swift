@@ -17,13 +17,21 @@ class ChatTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-     
+        setupViews()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
       
+    }
+    
+    private func setupViews(){
+        dialogIconImageView.layer.borderWidth = 1.0
+        dialogIconImageView.layer.masksToBounds = false
+        dialogIconImageView.layer.borderColor = UIColor.white.cgColor
+        dialogIconImageView.layer.cornerRadius = contactIconImageView.frame.size.width / 2
+        dialogIconImageView.clipsToBounds = true
     }
     
     static func getNibName()->String{
