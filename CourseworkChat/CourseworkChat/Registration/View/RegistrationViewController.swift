@@ -23,6 +23,8 @@ class RegistrationViewController: UIViewController {
     private let disposeBag = DisposeBag()
     private var stage : RegistrationStage
     
+    var viewModel : RegistrationViewModel!
+    
     init(with stage : RegistrationStage) {
         self.stage = stage
         super.init(nibName: nil, bundle: nil)
@@ -42,6 +44,8 @@ class RegistrationViewController: UIViewController {
         setupViews()
         setupGestureRecognizers()
         setupUserNameObserver()
+        
+        setupBindings()
     }
     
     private func setupViews(){
@@ -82,5 +86,11 @@ class RegistrationViewController: UIViewController {
             }).disposed(by: disposeBag)
     }
     
+    private func setupBindings(){
+        nextButton.rx
+            .tap
+            .bind(to: viewModel.input.next)
+            .disposed(by: disposeBag)
+    }
     
 }

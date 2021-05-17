@@ -14,7 +14,9 @@ class AuthorizationViewController: UIViewController {
     @IBOutlet var loginTextField: UITextField!
     @IBOutlet var passwordTextField: UITextField!
     @IBOutlet var loginButton: UIButton!
+    @IBOutlet var signUpButton: UIButton!
     
+    var viewModel : AuthorizationViewModel!
     private let disposeBag = DisposeBag()
     
     override func viewDidLoad() {
@@ -22,7 +24,7 @@ class AuthorizationViewController: UIViewController {
         setupViews()
         setupLoginObserver()
         setupGestureRecognizers()
-        
+        setupBinding()
     }
     
     private func setupViews(){
@@ -63,7 +65,10 @@ class AuthorizationViewController: UIViewController {
     }
     
     private func setupBinding(){
-        
+        signUpButton.rx
+            .tap
+            .bind(to: viewModel.input.register)
+            .disposed(by: disposeBag)
     }
     
 }

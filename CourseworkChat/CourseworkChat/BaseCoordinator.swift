@@ -46,7 +46,7 @@ class SceneCoordinator: BaseCoordinator<Void> {
         window.rootViewController = navigationController
         navigationController.isNavigationBarHidden = true
         
-        showMainCoordinator(with: navigationController)
+        showAuthCoordinator(with: navigationController)
         
         return Observable.never()
     }
@@ -75,9 +75,70 @@ class AuthCoordinator : BaseCoordinator<Void>{
     }
     
     override func start() -> Observable<Void> {
+        let viewController = AuthorizationViewController()
+        let viewModel = AuthorizationViewModel()
+        viewController.viewModel = viewModel
+        
+        viewModel.output.registerShow
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else {return}
+                self.showRegistrationCoordinator(with: self.navigationController)
+            }).disposed(by: disposeBag)
+        
+        self.navigationController.pushViewController(viewController, animated: true)
         return Observable.never()
     }
+    
+    private func showRegistrationCoordinator(with navigationController : UINavigationController){
+        let registrationCoordinator = RegistrationCoordinator(with: navigationController)
+        coordinate(to: registrationCoordinator)
+            .subscribe()
+            .disposed(by: disposeBag)
+    }
 }
+
+class RegistrationCoordinator : BaseCoordinator<Void>{
+    
+    private let navigationController : UINavigationController
+    
+    init(with navigationController : UINavigationController) {
+        self.navigationController = navigationController
+    }
+    
+    override func start() -> Observable<Void> {
+        let viewController = RegistrationViewController(with: .login)
+        let viewModel = RegistrationViewModel()
+        viewController.viewModel = viewModel
+        
+        viewModel.output.nextShow
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else {return}
+                let viewController = RegistrationViewController(with: .password)
+                let viewModel = RegistrationViewModel()
+                viewController.viewModel = viewModel
+                viewModel.output.nextShow
+                    .subscribe(onNext: { [weak self] _ in              //MARK: FIX IT complexity
+                        guard let self = self else {return}
+                        self.navigationController.isNavigationBarHidden = true
+                        self.navigationController.popToRootViewController(animated: true)
+                    }).disposed(by: self.disposeBag)
+                self.navigationController.pushViewController(viewController, animated: true)
+            }).disposed(by: disposeBag)
+        
+        navigationController.isNavigationBarHidden = false
+        self.navigationController.pushViewController(viewController, animated: true)
+        return Observable.never()
+    }
+    
+    //    private func showRegistrationCoordinator(with navigationController : UINavigationController){
+    //        let detailChatCoordinator = DetailChatCoordinator(with: navigationController)
+    //        coordinate(to: detailChatCoordinator)
+    //            .subscribe()
+    //            .disposed(by: disposeBag)
+    //    }
+}
+
+
 
 class MainCoordinator : BaseCoordinator<Void>{
     
@@ -110,17 +171,17 @@ class MainCoordinator : BaseCoordinator<Void>{
         
         navigationController.pushViewController(tabBarController, animated: true)
         
-       
+        
         coordinate(to: contactsCoordinator)
             .subscribe()
             .disposed(by: disposeBag)
         
-       
+        
         coordinate(to: chatsCoordinator)
             .subscribe()
             .disposed(by: disposeBag)
         
-       
+        
         coordinate(to: settingsCoordinator)
             .subscribe()
             .disposed(by: disposeBag)
@@ -147,7 +208,7 @@ class ChatsCoordinator : BaseCoordinator<Void> {
                 guard let self = self else {return}
                 self.showDetailChatCoordinator(with: self.navigationController)
             }).disposed(by: disposeBag)
-    
+        
         
         self.navigationController.pushViewController(viewController, animated: true)
         return Observable.never()

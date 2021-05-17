@@ -13,6 +13,7 @@
                 <outlet property="loginButton" destination="Sh9-kl-37z" id="K6V-ru-3gB"/>
                 <outlet property="loginTextField" destination="sgs-BL-CsE" id="5PZ-OU-vRs"/>
                 <outlet property="passwordTextField" destination="Rwq-pc-mWl" id="jhe-Pl-gYW"/>
+                <outlet property="signUpButton" destination="Z4h-Ip-c1t" id="agh-SN-c9Q"/>
                 <outlet property="view" destination="SIC-Qp-e3K" id="We0-P8-j3I"/>
             </connections>
         </placeholder>
