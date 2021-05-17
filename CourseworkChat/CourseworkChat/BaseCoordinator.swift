@@ -139,6 +139,38 @@ class ChatsCoordinator : BaseCoordinator<Void> {
     
     override func start() -> Observable<Void> {
         let viewController = ChatsViewController()
+        let viewModel = ChatsViewModel()
+        viewController.viewModel = viewModel
+        
+        viewModel.selectedhShow
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else {return}
+                self.showDetailChatCoordinator(with: self.navigationController)
+            }).disposed(by: disposeBag)
+    
+        
+        self.navigationController.pushViewController(viewController, animated: true)
+        return Observable.never()
+    }
+    
+    private func showDetailChatCoordinator(with navigationController : UINavigationController){
+        let detailChatCoordinator = DetailChatCoordinator(with: navigationController)
+        coordinate(to: detailChatCoordinator)
+            .subscribe()
+            .disposed(by: disposeBag)
+    }
+    
+}
+
+class DetailChatCoordinator : BaseCoordinator<Void> {
+    private let navigationController : UINavigationController
+    
+    init(with navigationController : UINavigationController) {
+        self.navigationController = navigationController
+    }
+    
+    override func start() -> Observable<Void> {
+        let viewController = DetailChatViewController()
         self.navigationController.pushViewController(viewController, animated: true)
         return Observable.never()
     }
