@@ -6,16 +6,20 @@
 //
 
 import UIKit
+import RxSwift
 
 class ChatsViewController: UIViewController {
     
     private var tableView : UITableView!
     
+    var viewModel : ChatsViewModel!
+    private let disposeBag = DisposeBag()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
         bindTableView()
-        
+        setupBindings()
         
     }
     
@@ -50,6 +54,21 @@ class ChatsViewController: UIViewController {
         tableView.delegate = self
     }
     
+    
+    private func setupBindings(){
+        tableView.rx
+            .itemSelected
+            .do(onNext: { [unowned self] indexPath in
+                self.tableView.deselectRow(at: indexPath, animated: true)
+            })
+            .map { indexPath in
+                return (indexPath)
+            }
+            .bind(to: self.viewModel.selected)
+            .disposed(by: disposeBag)
+        
+    }
+    
 }
 
 extension ChatsViewController : UITableViewDataSource, UITableViewDelegate{
@@ -67,6 +86,6 @@ extension ChatsViewController : UITableViewDataSource, UITableViewDelegate{
     
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-           return 70
-       }
+        return 70
+    }
 }
