@@ -6,3 +6,17 @@
 //
 
 import Foundation
+import RxSwift
+
+class ChatsViewModel {
+    
+    let selected : AnyObserver<IndexPath>
+    let selectedhShow : Observable<IndexPath>
+    
+    private let selectedCell = PublishSubject<IndexPath>()
+    
+    init() {
+        selected = selectedCell.asObserver()
+        selectedhShow = selectedCell.asObservable()
+    }
+}
