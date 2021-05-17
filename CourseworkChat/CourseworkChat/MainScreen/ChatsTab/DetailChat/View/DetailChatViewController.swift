@@ -20,7 +20,7 @@ struct Message : MessageType {
     var kind: MessageKind
 }
 
-class ChatViewController: MessagesViewController {
+class DetailChatViewController: MessagesViewController {
     
     var senders = [SenderType]()
     
@@ -48,7 +48,7 @@ class ChatViewController: MessagesViewController {
     }
 }
 
-extension ChatViewController : MessagesDataSource{
+extension DetailChatViewController : MessagesDataSource{
     func currentSender() -> SenderType {
         return senders[0]
     }
@@ -91,7 +91,7 @@ extension ChatViewController : MessagesDataSource{
 }
 
 
-extension ChatViewController : MessagesDisplayDelegate,MessagesLayoutDelegate{
+extension DetailChatViewController : MessagesDisplayDelegate,MessagesLayoutDelegate{
     
     func configureAvatarView(_ avatarView: AvatarView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
         if isFromCurrentSender(message: message){
