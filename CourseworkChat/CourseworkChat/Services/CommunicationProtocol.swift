@@ -9,13 +9,16 @@ import Foundation
 
 enum SendReceiveProtocol : Codable{
     enum CodingKeys: CodingKey {
-        case registration,authorization,newChat,newMessage,offline
+        case checkLogin,registration,authorization,newChat,newMessage,offline
     }
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let keys = container.allKeys.first
         switch keys {
+        case .checkLogin:
+            let login = try container.decode(String.self, forKey: .checkLogin)
+            self = .checkLogin(login: login)
         case .registration:
             var nestedContainer = try container.nestedUnkeyedContainer(forKey: .registration)
             let login = try nestedContainer.decode(String.self)
@@ -48,6 +51,8 @@ enum SendReceiveProtocol : Codable{
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         switch self {
+        case .checkLogin(login: let login):
+            try container.encode(login, forKey: .checkLogin)
         case .registration(login: let login, password: let password):
             var nestedContainer = container.nestedUnkeyedContainer(forKey: .registration)
             try nestedContainer.encode(login)
@@ -62,9 +67,11 @@ enum SendReceiveProtocol : Codable{
             try container.encode(message, forKey: .newMessage)
         case .offline(login: let login):
             try container.encode(login, forKey: .offline)
+       
         }
     }
     
+    case checkLogin(login:String)
     case registration(login:String,password:String)
     case authorization(login:String,password:String)
     case newChat(chat:Chat)
