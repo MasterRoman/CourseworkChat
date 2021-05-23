@@ -46,20 +46,28 @@ class SceneCoordinator: BaseCoordinator<Void> {
         window.rootViewController = navigationController
         navigationController.isNavigationBarHidden = true
         
-        showAuthCoordinator(with: navigationController)
+        var networkManager : NetworkClient
+        do {
+            networkManager = try NetworkManager()
+            showMainCoordinator(with: navigationController, networkManager: networkManager)
+        } catch (_) {
+        
+        }
+        
+        
         
         return Observable.never()
     }
     
-    private func showAuthCoordinator(with navigationController : UINavigationController){
+    private func showAuthCoordinator(with navigationController : UINavigationController,networkService : NetworkClient){
         let authCoordinator = AuthCoordinator(with: navigationController)
         coordinate(to: authCoordinator)
             .subscribe()
             .disposed(by: disposeBag)
     }
     
-    private func showMainCoordinator(with navigationController : UINavigationController){
-        let mainCoordinator = MainCoordinator(with: navigationController)
+    private func showMainCoordinator(with navigationController : UINavigationController,networkManager : NetworkClient){
+        let mainCoordinator = MainCoordinator(with: navigationController, networkManager: networkManager)
         coordinate(to: mainCoordinator)
             .subscribe()
             .disposed(by: disposeBag)
@@ -143,9 +151,11 @@ class RegistrationCoordinator : BaseCoordinator<Void>{
 class MainCoordinator : BaseCoordinator<Void>{
     
     private let navigationController : UINavigationController
+    private let networkManager : NetworkClient
     
-    init(with navigationController : UINavigationController) {
+    init(with navigationController : UINavigationController,networkManager : NetworkClient) {
         self.navigationController = navigationController
+        self.networkManager = networkManager
     }
     
     override func start() -> Observable<Void> {
@@ -155,15 +165,15 @@ class MainCoordinator : BaseCoordinator<Void>{
         
         let contactsNavigationController = UINavigationController()
         contactsNavigationController.tabBarItem = UITabBarItem(tabBarSystemItem: .contacts, tag: 0)
-        let contactsCoordinator = ContactsCoordinator(with: contactsNavigationController)
+        let contactsCoordinator = ContactsCoordinator(with: contactsNavigationController, networkManager: networkManager)
         
         let chatsNavigationController = UINavigationController()
         chatsNavigationController.tabBarItem = UITabBarItem(title: "Chats", image: UIImage(systemName: "message"), selectedImage: UIImage(systemName: "message.fill"))
-        let chatsCoordinator = ChatsCoordinator(with: chatsNavigationController)
+        let chatsCoordinator = ChatsCoordinator(with: chatsNavigationController, networkManager: networkManager)
         
         let settingsNavigationController = UINavigationController()
         settingsNavigationController.tabBarItem = UITabBarItem(title: "Settings", image: UIImage(systemName: "gear"),tag: 2)
-        let settingsCoordinator = SettingsCoordinator(with: settingsNavigationController)
+        let settingsCoordinator = SettingsCoordinator(with: settingsNavigationController, networkManager: networkManager)
         
         tabBarController.viewControllers = [contactsNavigationController,
                                             chatsNavigationController,
@@ -193,14 +203,16 @@ class MainCoordinator : BaseCoordinator<Void>{
 class ChatsCoordinator : BaseCoordinator<Void> {
     
     private let navigationController : UINavigationController
+    private let networkManager : NetworkClient
     
-    init(with navigationController : UINavigationController) {
+    init(with navigationController : UINavigationController,networkManager : NetworkClient) {
         self.navigationController = navigationController
+        self.networkManager = networkManager
     }
     
     override func start() -> Observable<Void> {
         let viewController = ChatsViewController()
-        let viewModel = ChatsViewModel()
+        let viewModel = ChatsViewModel(networkManager: networkManager)
         viewController.viewModel = viewModel
         
         viewModel.selectedhShow
@@ -215,7 +227,7 @@ class ChatsCoordinator : BaseCoordinator<Void> {
     }
     
     private func showDetailChatCoordinator(with navigationController : UINavigationController){
-        let detailChatCoordinator = DetailChatCoordinator(with: navigationController)
+        let detailChatCoordinator = DetailChatCoordinator(with: navigationController, networkManager: networkManager)
         coordinate(to: detailChatCoordinator)
             .subscribe()
             .disposed(by: disposeBag)
@@ -225,9 +237,10 @@ class ChatsCoordinator : BaseCoordinator<Void> {
 
 class DetailChatCoordinator : BaseCoordinator<Void> {
     private let navigationController : UINavigationController
-    
-    init(with navigationController : UINavigationController) {
+    private let networkManager : NetworkClient
+    init(with navigationController : UINavigationController,networkManager : NetworkClient) {
         self.navigationController = navigationController
+        self.networkManager = networkManager
     }
     
     override func start() -> Observable<Void> {
@@ -240,9 +253,11 @@ class DetailChatCoordinator : BaseCoordinator<Void> {
 class ContactsCoordinator : BaseCoordinator<Void> {
     
     private let navigationController : UINavigationController
+    private let networkManager : NetworkClient
     
-    init(with navigationController : UINavigationController) {
+    init(with navigationController : UINavigationController,networkManager : NetworkClient) {
         self.navigationController = navigationController
+        self.networkManager = networkManager
     }
     
     override func start() -> Observable<Void> {
@@ -255,9 +270,11 @@ class ContactsCoordinator : BaseCoordinator<Void> {
 class SettingsCoordinator : BaseCoordinator<Void> {
     
     private let navigationController : UINavigationController
+    private let networkManager : NetworkClient
     
-    init(with navigationController : UINavigationController) {
+    init(with navigationController : UINavigationController,networkManager : NetworkClient) {
         self.navigationController = navigationController
+        self.networkManager = networkManager
     }
     
     override func start() -> Observable<Void> {

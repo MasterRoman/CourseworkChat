@@ -30,4 +30,23 @@ class RegistrationViewModel : ViewModelType{
         
         self.input = Input(next: nextSubject.asObserver())
     }
+    
+    private func registerNotification(){
+        NotificationCenter.default.addObserver(self, selector: #selector(handleNotification), name: .registration, object: nil)
+    }
+    
+    private func removeNotification(){
+        NotificationCenter.default.removeObserver(self, name: .registration, object: nil)
+    }
+    
+    @objc private func handleNotification(notification: NSNotification){
+        if let credentials = notification.object as? Credentials {
+            
+        }
+        
+    }
+
+    deinit {
+        removeNotification()
+    }
 }
