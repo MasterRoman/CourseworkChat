@@ -20,15 +20,11 @@ enum SendReceiveProtocol : Codable{
             let login = try container.decode(String.self, forKey: .checkLogin)
             self = .checkLogin(login: login)
         case .registration:
-            var nestedContainer = try container.nestedUnkeyedContainer(forKey: .registration)
-            let login = try nestedContainer.decode(String.self)
-            let password = try nestedContainer.decode(String.self)
-            self = .registration(login: login, password: password)
+            let credentials = try container.decode(Credentials.self, forKey: .registration)
+            self = .registration(credentials: credentials)
         case .authorization:
-            var nestedContainer = try container.nestedUnkeyedContainer(forKey: .authorization)
-            let login = try nestedContainer.decode(String.self)
-            let password = try nestedContainer.decode(String.self)
-            self = .authorization(login: login,password : password)
+            let credentials = try container.decode(Credentials.self, forKey: .registration)
+            self = .authorization(credentials: credentials)
         case .newChat:
             let chat = try container.decode(Chat.self, forKey: .newChat)
             self = .newChat(chat: chat)
@@ -53,14 +49,10 @@ enum SendReceiveProtocol : Codable{
         switch self {
         case .checkLogin(login: let login):
             try container.encode(login, forKey: .checkLogin)
-        case .registration(login: let login, password: let password):
-            var nestedContainer = container.nestedUnkeyedContainer(forKey: .registration)
-            try nestedContainer.encode(login)
-            try nestedContainer.encode(password)
-        case .authorization(login: let login,password : let password):
-            var nestedContainer = container.nestedUnkeyedContainer(forKey: .authorization)
-            try nestedContainer.encode(login)
-            try nestedContainer.encode(password)
+        case .registration(credentials : let  credentials):
+            try container.encode(credentials, forKey: .registration)
+        case .authorization(credentials : let  credentials):
+            try container.encode(credentials, forKey: .authorization)
         case .newChat(chat: let chat):
             try container.encode(chat, forKey: .newChat)
         case .newMessage(message: let message):
@@ -72,8 +64,8 @@ enum SendReceiveProtocol : Codable{
     }
     
     case checkLogin(login:String)
-    case registration(login:String,password:String)
-    case authorization(login:String,password:String)
+    case registration(credentials : Credentials)
+    case authorization(credentials : Credentials)
     case newChat(chat:Chat)
     case newMessage(message:ChatBody)
     case offline(login:String)
