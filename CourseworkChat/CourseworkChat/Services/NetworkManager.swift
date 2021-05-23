@@ -22,6 +22,7 @@ class NetworkManager : NetworkClient {
         self.socket = try ClientEndpoint(host: address, port: port, sockType: .stream)
         do {
             try socket.connect()
+            try recieveUntillOffline()
         } catch (_) {
             return
         }
