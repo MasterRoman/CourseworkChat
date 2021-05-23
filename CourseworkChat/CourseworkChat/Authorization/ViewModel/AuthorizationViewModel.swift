@@ -40,4 +40,23 @@ class AuthorizationViewModel : ViewModelType {
         
         self.input = Input(register: registerSubject.asObserver())
     }
+    
+    private func registerNotification(){
+        NotificationCenter.default.addObserver(self, selector: #selector(handleNotification), name: .authorization, object: nil)
+    }
+    
+    private func removeNotification(){
+        NotificationCenter.default.removeObserver(self, name: .authorization, object: nil)
+    }
+    
+    @objc private func handleNotification(notification: NSNotification){
+        if let credentials = notification.object as? Credentials {
+            
+        }
+        
+    }
+
+    deinit {
+        removeNotification()
+    }
 }
