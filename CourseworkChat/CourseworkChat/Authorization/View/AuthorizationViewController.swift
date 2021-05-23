@@ -43,21 +43,9 @@ class AuthorizationViewController: UIViewController {
     }
     
     private func setupLoginObserver(){
-        let nameValidation = self.loginTextField
-            .rx.text
-            .map({($0!.count > 3)})
-            .share(replay: 1)
-        
-        let pwdValidation = passwordTextField
-            .rx.text
-            .map({($0!.count > 3)})
-            .share(replay: 1)
-        
-        
-        let enableButton = Observable.combineLatest(nameValidation, pwdValidation) { $0 && $1 }
-            .share(replay: 1)
-        
-        enableButton.subscribe(onNext: { enabled in
+       
+        viewModel.output.enable
+            .subscribe(onNext: { enabled in
             self.loginButton.alpha = enabled ? 0.8 : 0.5
             self.loginButton.isEnabled = enabled
         }).disposed(by: disposeBag)
@@ -69,6 +57,22 @@ class AuthorizationViewController: UIViewController {
             .tap
             .bind(to: viewModel.input.register)
             .disposed(by: disposeBag)
+        
+        loginButton.rx
+            .tap
+            .bind(to: viewModel.input.authorize)
+            .disposed(by: disposeBag)
+        
+        loginTextField.rx
+            .text
+            .bind(to: viewModel.input.login)
+            .disposed(by: disposeBag)
+        
+        passwordTextField.rx
+            .text
+            .bind(to: viewModel.input.password)
+            .disposed(by: disposeBag)
+        
     }
     
 }
