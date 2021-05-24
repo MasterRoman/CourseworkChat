@@ -23,7 +23,7 @@ enum SendReceiveProtocol : Codable{
             let credentials = try container.decode(Credentials.self, forKey: .registration)
             self = .registration(credentials: credentials)
         case .authorization:
-            let credentials = try container.decode(Credentials.self, forKey: .registration)
+            let credentials = try container.decode(Credentials.self, forKey: .authorization)
             self = .authorization(credentials: credentials)
         case .newChat:
             let chat = try container.decode(Chat.self, forKey: .newChat)
