@@ -64,12 +64,12 @@ class AuthorizationViewController: UIViewController {
             .disposed(by: disposeBag)
         
         loginTextField.rx
-            .text
+            .text.orEmpty
             .bind(to: viewModel.input.login)
             .disposed(by: disposeBag)
         
         passwordTextField.rx
-            .text
+            .text.orEmpty
             .bind(to: viewModel.input.password)
             .disposed(by: disposeBag)
         
