@@ -1,8 +1,8 @@
 //
-//  LoginRegistrationController.swift
+//  RegistrationViewController.swift
 //  CourseworkChat
 //
-//  Created by Admin on 11.05.2021.
+//  Created by Admin on 25.05.2021.
 //
 
 import UIKit
@@ -13,7 +13,7 @@ enum RegistrationStage {
     case password
 }
 
-class RegistrationViewController: UIViewController {
+class RegistrationViewController : UIViewController {
     
     @IBOutlet var headerLabel: UILabel!
     @IBOutlet var descriptionLabel: UILabel!
@@ -23,7 +23,7 @@ class RegistrationViewController: UIViewController {
     private let disposeBag = DisposeBag()
     private var stage : RegistrationStage
     
-    var viewModel : RegistrationViewModel!
+    var viewModel : RegistrationViewModelType!
     
     init(with stage : RegistrationStage) {
         self.stage = stage
@@ -91,6 +91,12 @@ class RegistrationViewController: UIViewController {
             .tap
             .bind(to: viewModel.input.next)
             .disposed(by: disposeBag)
+        
+        inputTextField.rx
+            .text.orEmpty
+            .bind(to: viewModel.input.text)
+            .disposed(by: disposeBag)
     }
     
 }
+

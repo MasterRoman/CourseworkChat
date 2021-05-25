@@ -49,9 +49,9 @@ class SceneCoordinator: BaseCoordinator<Void> {
         var networkManager : NetworkClient
         do {
             networkManager = try NetworkManager()
-            showMainCoordinator(with: navigationController, networkManager: networkManager)
+            showAuthCoordinator(with: navigationController, networkManager: networkManager)
         } catch (_) {
-        
+            
         }
         
         
@@ -59,8 +59,8 @@ class SceneCoordinator: BaseCoordinator<Void> {
         return Observable.never()
     }
     
-    private func showAuthCoordinator(with navigationController : UINavigationController,networkService : NetworkClient){
-        let authCoordinator = AuthCoordinator(with: navigationController)
+    private func showAuthCoordinator(with navigationController : UINavigationController,networkManager : NetworkClient){
+        let authCoordinator = AuthCoordinator(with: navigationController, networkManager: networkManager)
         coordinate(to: authCoordinator)
             .subscribe()
             .disposed(by: disposeBag)
@@ -77,14 +77,16 @@ class SceneCoordinator: BaseCoordinator<Void> {
 class AuthCoordinator : BaseCoordinator<Void>{
     
     private let navigationController : UINavigationController
+    private let networkManager : NetworkClient
     
-    init(with navigationController : UINavigationController) {
+    init(with navigationController : UINavigationController,networkManager : NetworkClient) {
         self.navigationController = navigationController
+        self.networkManager = networkManager
     }
     
     override func start() -> Observable<Void> {
         let viewController = AuthorizationViewController()
-        let viewModel = AuthorizationViewModel()
+        let viewModel = AuthorizationViewModel(with:networkManager)
         viewController.viewModel = viewModel
         
         viewModel.output.registerShow
@@ -98,7 +100,7 @@ class AuthCoordinator : BaseCoordinator<Void>{
     }
     
     private func showRegistrationCoordinator(with navigationController : UINavigationController){
-        let registrationCoordinator = RegistrationCoordinator(with: navigationController)
+        let registrationCoordinator = RegistrationCoordinator(with: navigationController, networkManager: networkManager)
         coordinate(to: registrationCoordinator)
             .subscribe()
             .disposed(by: disposeBag)
@@ -108,29 +110,37 @@ class AuthCoordinator : BaseCoordinator<Void>{
 class RegistrationCoordinator : BaseCoordinator<Void>{
     
     private let navigationController : UINavigationController
+    private let networkManager : NetworkClient
     
-    init(with navigationController : UINavigationController) {
+    init(with navigationController : UINavigationController,networkManager : NetworkClient) {
         self.navigationController = navigationController
+        self.networkManager = networkManager
     }
     
     override func start() -> Observable<Void> {
         let viewController = RegistrationViewController(with: .login)
-        let viewModel = RegistrationViewModel()
-        viewController.viewModel = viewModel
+        let viewModel = RegistrationLoginViewModel(with: networkManager)
+        viewController.viewModel = viewModel 
         
-        viewModel.output.nextShow
-            .subscribe(onNext: { [weak self] _ in
-                guard let self = self else {return}
-                let viewController = RegistrationViewController(with: .password)
-                let viewModel = RegistrationViewModel()
-                viewController.viewModel = viewModel
-                viewModel.output.nextShow
-                    .subscribe(onNext: { [weak self] _ in              //MARK: FIX IT complexity
-                        guard let self = self else {return}
-                        self.navigationController.isNavigationBarHidden = true
-                        self.navigationController.popToRootViewController(animated: true)
-                    }).disposed(by: self.disposeBag)
-                self.navigationController.pushViewController(viewController, animated: true)
+        viewModel.output.isSuccess
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [weak self] success in
+                if (success){
+                    guard let self = self else {return}
+                    let passwordViewController = RegistrationViewController(with: .password)
+                    let viewModel = RegistrationPasswordViewModel(with: viewModel.login ,networkManager: self.networkManager)
+                    passwordViewController.viewModel = viewModel
+                    viewModel.output.isSuccess
+                        .observeOn(MainScheduler.instance)
+                        .subscribe(onNext: { [weak self] success in
+                            if (success){
+                                guard let self = self else {return}
+                                self.navigationController.isNavigationBarHidden = true
+                                self.navigationController.popToRootViewController(animated: true)
+                            }
+                        }).disposed(by: self.disposeBag)
+                    self.navigationController.pushViewController(passwordViewController, animated: true)
+                }
             }).disposed(by: disposeBag)
         
         navigationController.isNavigationBarHidden = false
