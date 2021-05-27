@@ -16,6 +16,7 @@ class RegistrationLoginViewModel : RegistrationViewModelType{
     var output: Output
     
     private let networkManager : NetworkClient
+  
     
     private let disposeBag = DisposeBag()
     
@@ -28,7 +29,8 @@ class RegistrationLoginViewModel : RegistrationViewModelType{
     
     init(with networkManager : NetworkClient) {
         self.networkManager = networkManager
-    
+        
+        
         self.input = Input(next: nextSubject.asObserver(), text: textSubject.asObserver())
         
        

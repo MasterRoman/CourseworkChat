@@ -18,7 +18,7 @@ class NetworkManager : NetworkClient {
     let encoder = JSONEncoder()
     let decoder = JSONDecoder()
     
-    init(with address : String = "192.168.78.132",port : String = "2785") throws {
+    init(with address : String = "192.168.78.132",port : String = "2786") throws {
         self.socket = try ClientEndpoint(host: address, port: port, sockType: .stream)
         do {
             try socket.connect()

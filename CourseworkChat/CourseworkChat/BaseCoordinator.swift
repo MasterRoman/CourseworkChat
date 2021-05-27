@@ -24,7 +24,9 @@ class BaseCoordinator<ResultType>{
     func coordinate<T>(to coordinator: BaseCoordinator<T>) -> Observable<T> {
         store(coordinator: coordinator)
         return coordinator.start()
-            .do(onNext: { [weak self] _ in self?.free(coordinator: coordinator) })
+            .do(onNext: {
+                [weak self] _ in self?.free(coordinator: coordinator)
+            })
     }
     
     
@@ -46,10 +48,22 @@ class SceneCoordinator: BaseCoordinator<Void> {
         window.rootViewController = navigationController
         navigationController.isNavigationBarHidden = true
         
-        var networkManager : NetworkClient
         do {
-            networkManager = try NetworkManager()
-            showAuthCoordinator(with: navigationController, networkManager: networkManager)
+            let networkManager = try NetworkManager()
+            let userManager = UserManager()
+            let sessionService = SessionService(userManager: userManager, networkManager: networkManager)
+            sessionService.status
+                .observeOn(MainScheduler.instance)
+                .subscribe(onNext: { [weak self] status in
+                    guard let self = self else {return}
+                    if status != nil{
+                        status! ?
+                            self.showMainCoordinator(with: navigationController, networkManager: networkManager):
+                            self.showAuthCoordinator(with: navigationController, sessionService : sessionService)
+                    }
+                }).disposed(by: disposeBag)
+            
+            
         } catch (_) {
             
         }
@@ -59,8 +73,8 @@ class SceneCoordinator: BaseCoordinator<Void> {
         return Observable.never()
     }
     
-    private func showAuthCoordinator(with navigationController : UINavigationController,networkManager : NetworkClient){
-        let authCoordinator = AuthCoordinator(with: navigationController, networkManager: networkManager)
+    private func showAuthCoordinator(with navigationController : UINavigationController,sessionService : SessionService){
+        let authCoordinator = AuthCoordinator(with: navigationController,sessionService: sessionService)
         coordinate(to: authCoordinator)
             .subscribe()
             .disposed(by: disposeBag)
@@ -77,16 +91,16 @@ class SceneCoordinator: BaseCoordinator<Void> {
 class AuthCoordinator : BaseCoordinator<Void>{
     
     private let navigationController : UINavigationController
-    private let networkManager : NetworkClient
+    private let sessionService : SessionService
     
-    init(with navigationController : UINavigationController,networkManager : NetworkClient) {
+    init(with navigationController : UINavigationController,sessionService : SessionService) {
         self.navigationController = navigationController
-        self.networkManager = networkManager
+        self.sessionService = sessionService
     }
     
     override func start() -> Observable<Void> {
         let viewController = AuthorizationViewController()
-        let viewModel = AuthorizationViewModel(with:networkManager)
+        let viewModel = AuthorizationViewModel(with:sessionService)
         viewController.viewModel = viewModel
         
         viewModel.output.registerShow
@@ -95,12 +109,19 @@ class AuthCoordinator : BaseCoordinator<Void>{
                 self.showRegistrationCoordinator(with: self.navigationController)
             }).disposed(by: disposeBag)
         
+        //        viewModel.output.success
+        //            .observeOn(MainScheduler.instance)
+        //            .subscribe(onNext: { [weak self] _ in
+        //                guard let self = self else {return}
+        //                self.navigationController.popViewController(animated: true)
+        //            }).disposed(by: disposeBag)
+        
         self.navigationController.pushViewController(viewController, animated: true)
         return Observable.never()
     }
     
     private func showRegistrationCoordinator(with navigationController : UINavigationController){
-        let registrationCoordinator = RegistrationCoordinator(with: navigationController, networkManager: networkManager)
+        let registrationCoordinator = RegistrationCoordinator(with: navigationController, sessionService : sessionService)
         coordinate(to: registrationCoordinator)
             .subscribe()
             .disposed(by: disposeBag)
@@ -110,16 +131,16 @@ class AuthCoordinator : BaseCoordinator<Void>{
 class RegistrationCoordinator : BaseCoordinator<Void>{
     
     private let navigationController : UINavigationController
-    private let networkManager : NetworkClient
+    private let sessionService : SessionService
     
-    init(with navigationController : UINavigationController,networkManager : NetworkClient) {
+    init(with navigationController : UINavigationController,sessionService : SessionService) {
         self.navigationController = navigationController
-        self.networkManager = networkManager
+        self.sessionService = sessionService
     }
     
     override func start() -> Observable<Void> {
         let viewController = RegistrationViewController(with: .login)
-        let viewModel = RegistrationLoginViewModel(with: networkManager)
+        let viewModel = RegistrationLoginViewModel(with: sessionService.networkManager)
         viewController.viewModel = viewModel 
         
         viewModel.output.isSuccess
@@ -128,7 +149,7 @@ class RegistrationCoordinator : BaseCoordinator<Void>{
                 if (success){
                     guard let self = self else {return}
                     let passwordViewController = RegistrationViewController(with: .password)
-                    let viewModel = RegistrationPasswordViewModel(with: viewModel.login ,networkManager: self.networkManager)
+                    let viewModel = RegistrationPasswordViewModel(with: viewModel.login ,sessionService: self.sessionService)
                     passwordViewController.viewModel = viewModel
                     viewModel.output.isSuccess
                         .observeOn(MainScheduler.instance)

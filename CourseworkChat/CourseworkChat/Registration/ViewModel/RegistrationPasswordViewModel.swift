@@ -14,8 +14,7 @@ class RegistrationPasswordViewModel : RegistrationViewModelType{
     var input: Input
     var output: Output
     
-    private let networkManager : NetworkClient
-    
+    private let sessionService : SessionService
     private let disposeBag = DisposeBag()
     
 
@@ -25,9 +24,10 @@ class RegistrationPasswordViewModel : RegistrationViewModelType{
     private let textSubject = BehaviorSubject<String>(value: "")
     private let successRelay = BehaviorRelay<Bool>(value: false)
     
-    init(with login : String,networkManager : NetworkClient) {
+    init(with login : String,sessionService : SessionService) {
         self.login = login
-        self.networkManager = networkManager
+        self.sessionService = sessionService
+        
         
         self.output = Output(nextShow: nextSubject.asObservable(), isSuccess: successRelay.asObservable())
         
@@ -39,7 +39,7 @@ class RegistrationPasswordViewModel : RegistrationViewModelType{
             DispatchQueue.global(qos: .userInitiated).async {
                 do{
                     let credentials = Credentials(login: login, password: try self.textSubject.value())
-                    try self.networkManager.send(message: .registration(credentials: credentials))
+                    try self.sessionService.networkManager.send(message: .registration(credentials: credentials))
                 }
                 catch (let error){
                     print(error)
@@ -64,6 +64,7 @@ class RegistrationPasswordViewModel : RegistrationViewModelType{
         if let credentials = notification.object as? Credentials {
             if (credentials.login == login){
                 self.successRelay.accept(true)
+                self.sessionService.userManager.registerUser(login: login, password: credentials.password, isActive: true)
             }
             
         }

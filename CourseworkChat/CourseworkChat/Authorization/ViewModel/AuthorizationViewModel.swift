@@ -25,7 +25,7 @@ class AuthorizationViewModel : ViewModelType {
     
     private let disposeBag = DisposeBag()
     
-    let networkManager : NetworkClient
+    let sessionService : SessionService
     
     struct Input {
         let register : AnyObserver<Void>
@@ -37,7 +37,8 @@ class AuthorizationViewModel : ViewModelType {
     
     struct Output {
         let registerShow : Observable<Void>
-        let authorezeShow : Observable<Void>
+        let authorizeShow : Observable<Void>
+        let success : Observable<Bool>
         
         var enable : Observable<Bool>
     }
@@ -48,12 +49,14 @@ class AuthorizationViewModel : ViewModelType {
     private let loginSubject = BehaviorSubject<String>(value: "")
     private let passwordSubject = BehaviorSubject<String>(value: "")
     private let enableSubject = PublishSubject<Bool>()
+    private let successAuthorizationSubject =  BehaviorRelay<Bool>(value: false)
     
-    init(with networkManager : NetworkClient) {
-        self.networkManager = networkManager
+    init(with sessionService : SessionService) {
+        self.sessionService = sessionService
         
         self.output = Output(registerShow: registerSubject.asObservable(),
-                             authorezeShow: authorezeSubject.asObservable(),
+                             authorizeShow: authorezeSubject.asObservable(),
+                             success: successAuthorizationSubject.asObservable(),
                              enable: enableSubject.asObservable())
         
         
@@ -73,40 +76,22 @@ class AuthorizationViewModel : ViewModelType {
         output.enable = Observable.combineLatest(loginValidation, passwordValidation) { $0 && $1 }
             .share(replay: 1)
         
-        output.authorezeShow.subscribe(onNext: { [weak self] in
+        output.authorizeShow.subscribe(onNext: { [weak self] in
             guard let self = self else {return}
             
-            DispatchQueue.global(qos: .userInitiated).async {
-                do{
-                    let credentials = Credentials(login: try self.loginSubject.value(), password: try self.passwordSubject.value())
-                    try self.networkManager.send(message: .authorization(credentials: credentials ))
-                }
-                catch (let error){
-                    print(error)
-                    return
-                }
+            
+            do{
+                let credentials = Credentials(login: try self.loginSubject.value(), password: try self.passwordSubject.value())
+                self.sessionService.logIn(credentials: credentials)
             }
+            catch (let error){
+                print(error)
+                return
+            }
+            
             
         }).disposed(by: disposeBag)
         
     }
     
-    private func registerNotification(){
-        NotificationCenter.default.addObserver(self, selector: #selector(handleNotification), name: .authorization, object: nil)
-    }
-    
-    private func removeNotification(){
-        NotificationCenter.default.removeObserver(self, name: .authorization, object: nil)
-    }
-    
-    @objc private func handleNotification(notification: NSNotification){
-        if let credentials = notification.object as? Credentials {
-            
-        }
-        
-    }
-    
-    deinit {
-        removeNotification()
-    }
 }
