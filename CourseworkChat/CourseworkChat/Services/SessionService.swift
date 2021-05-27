@@ -53,6 +53,7 @@ class SessionService{
             }
             catch
             {
+                self.statusSubject.onNext(false)
                 print("Connection error (SessionService)")
             }
         }
