@@ -14,7 +14,7 @@
                 <outlet property="loginTextField" destination="sgs-BL-CsE" id="5PZ-OU-vRs"/>
                 <outlet property="passwordTextField" destination="Rwq-pc-mWl" id="jhe-Pl-gYW"/>
                 <outlet property="signUpButton" destination="Z4h-Ip-c1t" id="agh-SN-c9Q"/>
-                <outlet property="view" destination="SIC-Qp-e3K" id="a2u-Od-TgV"/>
+                <outlet property="view" destination="SIC-Qp-e3K" id="We0-P8-j3I"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
