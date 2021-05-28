@@ -6,6 +6,7 @@ target 'CourseworkChat' do
   use_frameworks!
 
   pod 'RxCocoa',    '~> 5.0'
+  pod 'RxDataSources', '~> 4.0'
   pod 'MessageKit', '~> 3.3'
 
   # Pods for CourseworkChat

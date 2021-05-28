@@ -1,4 +1,5 @@
 PODS:
+  - Differentiator (4.0.1)
   - InputBarAccessoryView (5.2.3):
     - InputBarAccessoryView/Core (= 5.2.3)
   - InputBarAccessoryView/Core (5.2.3)
@@ -7,6 +8,10 @@ PODS:
   - RxCocoa (5.1.1):
     - RxRelay (~> 5)
     - RxSwift (~> 5)
+  - RxDataSources (4.0.1):
+    - Differentiator (~> 4.0)
+    - RxCocoa (~> 5.0)
+    - RxSwift (~> 5.0)
   - RxRelay (5.1.1):
     - RxSwift (~> 5)
   - RxSwift (5.1.1)
@@ -14,22 +19,27 @@ PODS:
 DEPENDENCIES:
   - MessageKit (~> 3.3)
   - RxCocoa (~> 5.0)
+  - RxDataSources (~> 4.0)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
+    - Differentiator
     - InputBarAccessoryView
     - MessageKit
     - RxCocoa
+    - RxDataSources
     - RxRelay
     - RxSwift
 
 SPEC CHECKSUMS:
+  Differentiator: 886080237d9f87f322641dedbc5be257061b0602
   InputBarAccessoryView: f814a0317d47687fafc6bac9e4df6015eaf5b764
   MessageKit: fb539583599cd914e8e2d41fe7bdceb4bf686565
   RxCocoa: 32065309a38d29b5b0db858819b5bf9ef038b601
+  RxDataSources: efee07fa4de48477eca0a4611e6d11e2da9c1114
   RxRelay: d77f7d771495f43c556cbc43eebd1bb54d01e8e9
   RxSwift: 81470a2074fa8780320ea5fe4102807cb7118178
 
-PODFILE CHECKSUM: 8864b9c33df7f1546d85476600a0e1b2c240e50f
+PODFILE CHECKSUM: 78c6ec1c5b7f7fc8ad838d623442947ed8302b7b
 
 COCOAPODS: 1.5.2
