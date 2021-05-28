@@ -58,7 +58,7 @@ class SceneCoordinator: BaseCoordinator<Void> {
                     guard let self = self else {return}
                     if status != nil{
                         status! ?
-                            self.showMainCoordinator(with: navigationController, networkManager: networkManager):
+                            self.showMainCoordinator(with: navigationController, sessionService: sessionService):
                             self.showAuthCoordinator(with: navigationController, sessionService : sessionService)
                     }
                 }).disposed(by: disposeBag)
@@ -80,8 +80,8 @@ class SceneCoordinator: BaseCoordinator<Void> {
             .disposed(by: disposeBag)
     }
     
-    private func showMainCoordinator(with navigationController : UINavigationController,networkManager : NetworkClient){
-        let mainCoordinator = MainCoordinator(with: navigationController, networkManager: networkManager)
+    private func showMainCoordinator(with navigationController : UINavigationController,sessionService : SessionService){
+        let mainCoordinator = MainCoordinator(with: navigationController, sessionService: sessionService)
         coordinate(to: mainCoordinator)
             .subscribe()
             .disposed(by: disposeBag)
@@ -182,11 +182,11 @@ class RegistrationCoordinator : BaseCoordinator<Void>{
 class MainCoordinator : BaseCoordinator<Void>{
     
     private let navigationController : UINavigationController
-    private let networkManager : NetworkClient
+    private let sessionService : SessionService
     
-    init(with navigationController : UINavigationController,networkManager : NetworkClient) {
+    init(with navigationController : UINavigationController,sessionService : SessionService) {
         self.navigationController = navigationController
-        self.networkManager = networkManager
+        self.sessionService = sessionService
     }
     
     override func start() -> Observable<Void> {
@@ -196,15 +196,15 @@ class MainCoordinator : BaseCoordinator<Void>{
         
         let contactsNavigationController = UINavigationController()
         contactsNavigationController.tabBarItem = UITabBarItem(tabBarSystemItem: .contacts, tag: 0)
-        let contactsCoordinator = ContactsCoordinator(with: contactsNavigationController, networkManager: networkManager)
+        let contactsCoordinator = ContactsCoordinator(with: contactsNavigationController, networkManager: sessionService.networkManager)
         
         let chatsNavigationController = UINavigationController()
         chatsNavigationController.tabBarItem = UITabBarItem(title: "Chats", image: UIImage(systemName: "message"), selectedImage: UIImage(systemName: "message.fill"))
-        let chatsCoordinator = ChatsCoordinator(with: chatsNavigationController, networkManager: networkManager)
+        let chatsCoordinator = ChatsCoordinator(with: chatsNavigationController, networkManager: sessionService.networkManager)
         
         let settingsNavigationController = UINavigationController()
         settingsNavigationController.tabBarItem = UITabBarItem(title: "Settings", image: UIImage(systemName: "gear"),tag: 2)
-        let settingsCoordinator = SettingsCoordinator(with: settingsNavigationController, networkManager: networkManager)
+        let settingsCoordinator = SettingsCoordinator(with: settingsNavigationController, sessionService: sessionService)
         
         tabBarController.viewControllers = [contactsNavigationController,
                                             chatsNavigationController,
@@ -301,15 +301,17 @@ class ContactsCoordinator : BaseCoordinator<Void> {
 class SettingsCoordinator : BaseCoordinator<Void> {
     
     private let navigationController : UINavigationController
-    private let networkManager : NetworkClient
+    private let sessionService : SessionService
     
-    init(with navigationController : UINavigationController,networkManager : NetworkClient) {
+    init(with navigationController : UINavigationController,sessionService : SessionService) {
         self.navigationController = navigationController
-        self.networkManager = networkManager
+        self.sessionService = sessionService
     }
     
     override func start() -> Observable<Void> {
         let viewController = SettingsViewController()
+        let viewModel = SettingsViewModel(with: sessionService)
+        viewController.viewModel = viewModel
         self.navigationController.pushViewController(viewController, animated: true)
         return Observable.never()
     }
