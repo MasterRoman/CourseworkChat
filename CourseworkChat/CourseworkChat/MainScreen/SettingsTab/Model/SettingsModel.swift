@@ -6,8 +6,21 @@
 //
 
 import Foundation
+import RxDataSources
 
-struct Section {
+struct Section  {
     let title : String?
-    let options : [SettingsOptions]
+    var items : [SettingsOptions]
+}
+
+extension Section : SectionModelType{
+ 
+    init(original: Section, items: [SettingsOptions]) {
+        self = original
+        self.items = items
+    }
+    
+    typealias Item = SettingsOptions
+    
+
 }

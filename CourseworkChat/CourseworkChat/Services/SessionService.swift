@@ -50,6 +50,7 @@ class SessionService{
         DispatchQueue.global(qos: .userInitiated).async { [self] in
             do{
                 try self.networkManager.send(message: .authorization(credentials: credentials))
+                self.userManager.checkUserRegistration(login: credentials.login, password: credentials.password)
             }
             catch
             {
@@ -76,6 +77,7 @@ class SessionService{
         if let credentials = notification.object as? Credentials {
             if (credentials.login == "APPROVED"){
                 self.statusSubject.onNext(true)
+              
             }
             else
             {

@@ -6,28 +6,36 @@
 //
 
 import UIKit
+import RxSwift
+import RxDataSources
 
 class SettingsViewController: UIViewController {
     
     private var tableView : UITableView!
     private var userInfoHeaderView : UserInfoHeaderView!
     
-    private var models = [Section]()
+    lazy var dataSource : RxTableViewSectionedReloadDataSource<Section> = {
+        let dataSource = RxTableViewSectionedReloadDataSource<Section>(configureCell: { (_, tableView, indexPath, section) -> UITableViewCell in
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: SettingTableViewCell.getId(), for: indexPath) as! SettingTableViewCell
+            cell.configure(with: section)
+            return cell
+        })
+        return dataSource
+        
+    }()
+    
+    private let disposeBag = DisposeBag()
+    
+    var viewModel : SettingsViewModel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
         bindTableView()
-        configure()
     }
     
-    private func configure(){
-        self.models.append(Section(title: "", options: [SettingsOptions(title: "Edit profile", icon: UIImage(systemName: "person"), type: .navigation, handler: nil)]))
-        self.models.append(Section(title: "", options: [SettingsOptions(title: "About app", icon: UIImage(systemName: "questionmark.circle"), type: .navigation, handler: nil)]))
-        self.models.append(Section(title: "", options: [SettingsOptions(title: "Log out", icon: nil, type: .button, handler: nil)]))
-      
-        
-    }
+    
     
     private func setupViews(){
         self.tableView = UITableView(frame: CGRect.zero, style: .grouped)
@@ -46,43 +54,52 @@ class SettingsViewController: UIViewController {
         self.navigationItem.title = "Settings"
         
         let frame = CGRect(x: 0, y: 88, width: view.frame.width, height: 190)
-        self.userInfoHeaderView = UserInfoHeaderView(with: frame, name: "Roman Kozko", nickname: "romuald", icon: nil) //MARK: FIX IT
+        
+        self.userInfoHeaderView = UserInfoHeaderView(with: frame, name: viewModel.output.nickName, nickname: viewModel.output.nickName, icon: nil) 
+        
         self.tableView.tableHeaderView = self.userInfoHeaderView
         self.tableView.tableFooterView = UIView()
+        
+        
+       
     }
     
     private func bindTableView() {
+        tableView.rx.setDelegate(self).disposed(by: disposeBag)
         tableView.register(UINib(nibName:SettingTableViewCell.getNibName() , bundle: nil), forCellReuseIdentifier: SettingTableViewCell.getId())
-        tableView.dataSource = self
-        tableView.delegate = self
+        
+        
+        viewModel.output.sections
+            .drive(tableView.rx.items(dataSource: dataSource))
+            .disposed(by: disposeBag)
+      
+        
+        
+        tableView.rx.modelSelected(SettingsOptions.self)
+            .bind(to: viewModel.input.selected)
+            .disposed(by: disposeBag)
+        
+        tableView.rx.itemSelected
+            .subscribe(onNext: { [unowned self] (indexPath) in
+                self.tableView.deselectRow(at: indexPath, animated: true)
+            })
+            .disposed(by: disposeBag)
+        
+        viewModel.configure()
     }
     
 }
 
-extension SettingsViewController : UITableViewDataSource, UITableViewDelegate{
-   
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return self.models.count
-    }
+extension SettingsViewController : UITableViewDelegate{
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.models[section].options.count
-    }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: SettingTableViewCell.getId(), for: indexPath) as! SettingTableViewCell
-        let model = models[indexPath.section].options[indexPath.row]
-        cell.configure(with: model)
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        let model = models[indexPath.section].options[indexPath.row]
-        if (model.handler != nil){
-            model.handler!()
-        }
-    }
+    //    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    //        tableView.deselectRow(at: indexPath, animated: true)
+    //        let model = models[indexPath.section].options[indexPath.row]
+    //        if (model.handler != nil){
+    //            model.handler!()
+    //        }
+    //    }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 40
