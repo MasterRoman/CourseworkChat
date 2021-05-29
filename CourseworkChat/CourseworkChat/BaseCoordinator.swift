@@ -108,16 +108,9 @@ class AuthCoordinator : BaseCoordinator<Void>{
                 guard let self = self else {return}
                 self.showRegistrationCoordinator(with: self.navigationController)
             }).disposed(by: disposeBag)
-        
-        //        viewModel.output.success
-        //            .observeOn(MainScheduler.instance)
-        //            .subscribe(onNext: { [weak self] _ in
-        //                guard let self = self else {return}
-        //                self.navigationController.popViewController(animated: true)
-        //            }).disposed(by: disposeBag)
-        
+    
         self.navigationController.pushViewController(viewController, animated: true)
-        return Observable.never()
+        return self.sessionService.status.filter {$0!}.map { _ in Void() }
     }
     
     private func showRegistrationCoordinator(with navigationController : UINavigationController){
@@ -168,13 +161,6 @@ class RegistrationCoordinator : BaseCoordinator<Void>{
         self.navigationController.pushViewController(viewController, animated: true)
         return Observable.never()
     }
-    
-    //    private func showRegistrationCoordinator(with navigationController : UINavigationController){
-    //        let detailChatCoordinator = DetailChatCoordinator(with: navigationController)
-    //        coordinate(to: detailChatCoordinator)
-    //            .subscribe()
-    //            .disposed(by: disposeBag)
-    //    }
 }
 
 
@@ -257,7 +243,7 @@ class ChatsCoordinator : BaseCoordinator<Void> {
         return Observable.never()
     }
     
-    private func showDetailChatCoordinator(with navigationController : UINavigationController){
+    private func showDetailChatCoordinator(with navigationController : UINavigationController) {
         let detailChatCoordinator = DetailChatCoordinator(with: navigationController, networkManager: networkManager)
         coordinate(to: detailChatCoordinator)
             .subscribe()
