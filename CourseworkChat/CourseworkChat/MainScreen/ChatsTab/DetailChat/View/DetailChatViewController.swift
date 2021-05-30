@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import RxSwift
 import MessageKit
 
 class DetailChatViewController: MessagesViewController {
@@ -14,8 +15,17 @@ class DetailChatViewController: MessagesViewController {
     
     var messages = [MessageType]()
     
+    var viewModel : DetailChatViewModel!
+    
+    private let disposeBag = DisposeBag()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //    self.navigationItem.leftBarButtonItem = UIBarButtonItem( title: "Chats", style: .plain, target: nil, action: nil)
+        
+        
+        
         messagesCollectionView.messagesDataSource = self
         messagesCollectionView.messagesDisplayDelegate = self
         messagesCollectionView.messagesLayoutDelegate = self
@@ -33,8 +43,33 @@ class DetailChatViewController: MessagesViewController {
         messages.append(Message(sender: senders[2], messageId: "3", sentDate:Date.init(timeIntervalSince1970: -14124), kind: .text("My name is")))
         messages.append(Message(sender: senders[1], messageId: "4", sentDate:Date.init(timeIntervalSince1970: -1412), kind: .text("My name isMy name isMy name isMy name isMy name isMy name isMy name isMy name isMy name isMy name is")))
         messages.append(Message(sender: senders[1], messageId: "5", sentDate:Date.init(timeIntervalSince1970: -141), kind: .text("My name")))
+        
+        
+        setupBackButton()
+        setupMainBindings()
+    }
+    
+    private func setupBackButton(){
+        
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+        button.setTitle("Chats", for: .normal)
+        button.sizeToFit()
+        
+        button.rx
+            .tap
+            .bind(to: viewModel.input.back)
+            .disposed(by: disposeBag)
+        
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
+    }
+    
+    private func setupMainBindings(){
+        
     }
 }
+
+
 
 extension DetailChatViewController : MessagesDataSource{
     func currentSender() -> SenderType {
