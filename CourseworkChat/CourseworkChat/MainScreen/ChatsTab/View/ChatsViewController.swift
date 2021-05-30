@@ -53,7 +53,7 @@ class ChatsViewController: UIViewController {
         tableView.register(UINib(nibName:ChatTableViewCell.getNibName() , bundle: nil), forCellReuseIdentifier: ChatTableViewCell.getId())
         tableView.rx.setDelegate(self).disposed(by: disposeBag)
         
-        tableView.rx.modelSelected(Chat.self)
+        tableView.rx.modelSelected(ChatCellViewModel.self)
             .bind(to: viewModel.input.selected)
             .disposed(by: disposeBag)
         

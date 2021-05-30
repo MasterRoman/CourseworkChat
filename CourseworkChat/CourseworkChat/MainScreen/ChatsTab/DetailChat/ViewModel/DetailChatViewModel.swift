@@ -13,23 +13,31 @@ class DetailChatViewModel : ViewModelType{
     var input: Input
     var output: Output
     
+    private let chatService : ChatService
+    
     struct Input {
         let back : AnyObserver<Void>
         
     }
     
     struct Output{
-        let  back : Observable<Void>
-        
+        let back : Observable<Void>
+        let chat : Chat
+        let reload : Observable<Void>
     }
     
     private let backSubject = PublishSubject<Void>()
+    private let reloadSubject = PublishSubject<Void>()
     
-    init() {
+    init(with chat : Chat,chatService : ChatService) {
+        self.chatService = chatService
         
         self.input = Input(back: backSubject.asObserver())
-        self.output = Output(back: backSubject.asObservable())
+        self.output = Output(back: backSubject.asObservable(), chat: chat, reload: reloadSubject.asObservable())
         
+    
+        
+        registerNotification()
     }
     
     private func registerNotification(){
@@ -41,10 +49,12 @@ class DetailChatViewModel : ViewModelType{
     }
     
     @objc private func handleNotification(notification: NSNotification){
-        if let chat = notification.object as? ChatBody {
-            
+        DispatchQueue.main.async {
+            if let chat = notification.object as? ChatBody {
+                self.output.chat.chatBody.messages.append(contentsOf: chat.messages)
+                self.reloadSubject.onNext(())
+            }
         }
-        
     }
     
     deinit {

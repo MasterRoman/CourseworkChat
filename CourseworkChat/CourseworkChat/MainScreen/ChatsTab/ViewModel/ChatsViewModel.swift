@@ -16,71 +16,60 @@ class ChatsViewModel : ViewModelType {
     
     
     struct Input {
-        let selected : AnyObserver<Chat>
+        let selected : AnyObserver<ChatCellViewModel>
     }
     
     struct Output {
-        let selectedhShow : Observable<Chat>
-        var chats : Observable<[Chat]>
+        let selectedhShow : Observable<ChatCellViewModel>
+        var chats : Observable<[ChatCellViewModel]>
     }
     
-   
-    private let networkManager : NetworkClient
-
-    private let selectedCell = PublishSubject<Chat>()
-    private var chatsSubject : BehaviorRelay<[Chat]>
     
-    init(networkManager : NetworkClient) {
-        /////////
-        let sender = Sender(senderId: "1", displayName: "1")
-        let chat = Chat(senders: [sender], chatBody: ChatBody(chatId: UUID(), messages: [Message(sender: sender, messageId: "1", sentDate:Date(), kind: .text("hello"))]))
-        //////
+    private let chatService : ChatService
+    
+    private let selectedCell = PublishSubject<ChatCellViewModel>()
+    private var chatsRelay : BehaviorRelay<[ChatCellViewModel]>
+    
+    init(chatService : ChatService) {
+        self.chatService = chatService
         
-        self.chatsSubject = BehaviorRelay<[Chat]>(value: [chat])
+        let chats = chatService.getChats()
+        var models : [ChatCellViewModel] = []
+        for chat in chats {
+            let model = ChatCellViewModel(from: chat)
+            models.append(model)
+        }
+        
+        self.chatsRelay = BehaviorRelay<[ChatCellViewModel]>(value: models)
         
         self.input = Input(selected: selectedCell.asObserver())
-        self.output = Output(selectedhShow: selectedCell.asObservable(), chats: chatsSubject.asObservable())
-
-        self.networkManager = networkManager
-        do{
-        try self.networkManager.send(message: .newChat(chat: chat))
-        }
-        catch
-        {
-            
-        }
+        self.output = Output(selectedhShow: selectedCell.asObservable(), chats: chatsRelay.asObservable())
+        
+        
+        
         registerNotifications()
     }
     
     private func registerNotifications(){
         NotificationCenter.default.addObserver(self, selector: #selector(handleNewChatNotification), name: .newChat, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleNewMessageNotification), name: .newMessage, object: nil)
+        
     }
     
     private func removeNotifications(){
         NotificationCenter.default.removeObserver(self, name: .newChat, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .newMessage, object: nil)
     }
     
     @objc private func handleNewChatNotification(notification: NSNotification){
         if let chat = notification.object as? Chat {
-//            let newChat = Observable.of([chat])
-//            output.chats = Observable<[Chat]>.combineLatest(output.chats, newChat){
-//                $1 + $0
-//            }
-            chatsSubject.accept([chat] + chatsSubject.value)
+            //            let newChat = Observable.of([chat])
+            //            output.chats = Observable<[Chat]>.combineLatest(output.chats, newChat){
+            //                $1 + $0
+            //            }
+            //          chatsRelay.accept([chat] + chatsSubject.value)
         }
         
     }
     
-    @objc private func handleNewMessageNotification(notification: NSNotification){
-        if let message = notification.object as? ChatBody {
-        
-        
-        }
-        
-    }
-
     deinit {
         removeNotifications()
     }

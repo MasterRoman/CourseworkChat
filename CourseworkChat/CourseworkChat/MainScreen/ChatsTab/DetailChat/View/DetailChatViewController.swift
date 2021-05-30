@@ -11,10 +11,6 @@ import MessageKit
 
 class DetailChatViewController: MessagesViewController {
     
-    var senders = [SenderType]()
-    
-    var messages = [MessageType]()
-    
     var viewModel : DetailChatViewModel!
     
     private let disposeBag = DisposeBag()
@@ -34,15 +30,6 @@ class DetailChatViewController: MessagesViewController {
             layout.setMessageOutgoingAvatarSize(.zero)
         }
         
-        senders.append(Sender(senderId: "self", displayName: "Me"))
-        senders.append(Sender(senderId: "other", displayName: "He"))
-        senders.append(Sender(senderId: "othe", displayName: "H"))
-        
-        messages.append(Message(sender: senders[0], messageId: "1", sentDate:Date.init(timeIntervalSince1970: -1412412), kind: .text("hello")))
-        messages.append(Message(sender: senders[1], messageId: "2", sentDate:Date.init(timeIntervalSince1970: -141241), kind: .text("hello")))
-        messages.append(Message(sender: senders[2], messageId: "3", sentDate:Date.init(timeIntervalSince1970: -14124), kind: .text("My name is")))
-        messages.append(Message(sender: senders[1], messageId: "4", sentDate:Date.init(timeIntervalSince1970: -1412), kind: .text("My name isMy name isMy name isMy name isMy name isMy name isMy name isMy name isMy name isMy name is")))
-        messages.append(Message(sender: senders[1], messageId: "5", sentDate:Date.init(timeIntervalSince1970: -141), kind: .text("My name")))
         
         
         setupBackButton()
@@ -65,29 +52,39 @@ class DetailChatViewController: MessagesViewController {
     }
     
     private func setupMainBindings(){
+        viewModel.output.reload
+            .take(1)
+            .observeOn(MainScheduler.instance)
+            .bind(onNext: {
+                _ in
+                self.messagesCollectionView.reloadData()
+            })
+            
+            .disposed(by: disposeBag)
         
     }
+    
 }
 
 
 
 extension DetailChatViewController : MessagesDataSource{
     func currentSender() -> SenderType {
-        return senders[0]
+        return viewModel.output.chat.senders[0]
     }
     
     func messageForItem(at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> MessageType {
-        return messages[indexPath.section]
+        return viewModel.output.chat.chatBody.messages[indexPath.section]
     }
     
     func numberOfSections(in messagesCollectionView: MessagesCollectionView) -> Int {
-        return messages.count
+        return viewModel.output.chat.chatBody.messages.count
     }
     
     
     
     func messageTopLabelAttributedText(for message: MessageType, at indexPath: IndexPath) -> NSAttributedString? {
-        if (senders.count < 3){
+        if (viewModel.output.chat.senders.count < 3){
             return nil
         }
         
@@ -97,7 +94,7 @@ extension DetailChatViewController : MessagesDataSource{
         
         let prevIndex = indexPath.section - 1
         if (prevIndex >= 0){
-            if message.sender.senderId == messages[prevIndex].sender.senderId{
+            if message.sender.senderId == viewModel.output.chat.chatBody.messages[prevIndex].sender.senderId{
                 return nil
             }
         }
@@ -123,6 +120,7 @@ extension DetailChatViewController : MessagesDisplayDelegate,MessagesLayoutDeleg
         else
         {
             let nextIndex = indexPath.section + 1
+            let messages = viewModel.output.chat.chatBody.messages
             if (nextIndex < messages.count){
                 if (messages[nextIndex].sender.senderId == message.sender.senderId){
                     avatarView.isHidden = true
@@ -132,12 +130,13 @@ extension DetailChatViewController : MessagesDisplayDelegate,MessagesLayoutDeleg
                     }
                 }
             }
+            
             avatarView.image = UIImage(systemName: "plus")
         }
     }
     
     func messageTopLabelHeight(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> CGFloat {
-        if (senders.count < 3){
+        if (viewModel.output.chat.senders.count < 3){
             return 0
         }
         if isFromCurrentSender(message: message){
@@ -145,7 +144,7 @@ extension DetailChatViewController : MessagesDisplayDelegate,MessagesLayoutDeleg
         }
         let prevIndex = indexPath.section - 1
         if (prevIndex >= 0 ){
-            if message.sender.senderId == messages[prevIndex].sender.senderId{
+            if message.sender.senderId == viewModel.output.chat.chatBody.messages[prevIndex].sender.senderId{
                 return 0
             }
         }
