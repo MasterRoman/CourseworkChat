@@ -28,7 +28,6 @@ class DetailChatViewModel : ViewModelType{
     init() {
         
         self.input = Input(back: backSubject.asObserver())
-        
         self.output = Output(back: backSubject.asObservable())
         
     }

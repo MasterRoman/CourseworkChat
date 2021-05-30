@@ -7,40 +7,81 @@
 
 import Foundation
 import RxSwift
+import RxCocoa
 
-class ChatsViewModel {
+class ChatsViewModel : ViewModelType {
     
-    let selected : AnyObserver<IndexPath>
-    let selectedhShow : Observable<IndexPath>
+    var input: Input
+    var output: Output
+    
+    
+    struct Input {
+        let selected : AnyObserver<Chat>
+    }
+    
+    struct Output {
+        let selectedhShow : Observable<Chat>
+        var chats : Observable<[Chat]>
+    }
+    
+   
     private let networkManager : NetworkClient
-    
-    private let selectedCell = PublishSubject<IndexPath>()
+
+    private let selectedCell = PublishSubject<Chat>()
+    private var chatsSubject : BehaviorRelay<[Chat]>
     
     init(networkManager : NetworkClient) {
-        selected = selectedCell.asObserver()
-        selectedhShow = selectedCell.asObservable()
+        /////////
+        let sender = Sender(senderId: "1", displayName: "1")
+        let chat = Chat(senders: [sender], chatBody: ChatBody(chatId: UUID(), messages: [Message(sender: sender, messageId: "1", sentDate:Date(), kind: .text("hello"))]))
+        //////
         
+        self.chatsSubject = BehaviorRelay<[Chat]>(value: [chat])
+        
+        self.input = Input(selected: selectedCell.asObserver())
+        self.output = Output(selectedhShow: selectedCell.asObservable(), chats: chatsSubject.asObservable())
+
         self.networkManager = networkManager
-        
-        registerNotification()
-    }
-    
-    private func registerNotification(){
-        NotificationCenter.default.addObserver(self, selector: #selector(handleNotification), name: .newChat, object: nil)
-    }
-    
-    private func removeNotification(){
-        NotificationCenter.default.removeObserver(self, name: .newChat, object: nil)
-    }
-    
-    @objc private func handleNotification(notification: NSNotification){
-        if let chat = notification.object as? Chat {
+        do{
+        try self.networkManager.send(message: .newChat(chat: chat))
+        }
+        catch
+        {
             
+        }
+        registerNotifications()
+    }
+    
+    private func registerNotifications(){
+        NotificationCenter.default.addObserver(self, selector: #selector(handleNewChatNotification), name: .newChat, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleNewMessageNotification), name: .newMessage, object: nil)
+    }
+    
+    private func removeNotifications(){
+        NotificationCenter.default.removeObserver(self, name: .newChat, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .newMessage, object: nil)
+    }
+    
+    @objc private func handleNewChatNotification(notification: NSNotification){
+        if let chat = notification.object as? Chat {
+//            let newChat = Observable.of([chat])
+//            output.chats = Observable<[Chat]>.combineLatest(output.chats, newChat){
+//                $1 + $0
+//            }
+            chatsSubject.accept([chat] + chatsSubject.value)
+        }
+        
+    }
+    
+    @objc private func handleNewMessageNotification(notification: NSNotification){
+        if let message = notification.object as? ChatBody {
+        
+        
         }
         
     }
 
     deinit {
-        removeNotification()
+        removeNotifications()
     }
 }

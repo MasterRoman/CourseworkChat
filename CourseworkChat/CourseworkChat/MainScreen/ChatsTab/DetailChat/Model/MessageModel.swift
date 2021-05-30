@@ -60,8 +60,17 @@ extension MessageKind : Codable{
         }
         
     }
-    
-    
+}
+
+extension MessageKind{
+    func getValue() -> String{
+        switch self {
+        case .text(let text):
+            return text
+        default:
+            return "Data"
+        }
+    }
 }
 
 struct Message : MessageType,Codable {
