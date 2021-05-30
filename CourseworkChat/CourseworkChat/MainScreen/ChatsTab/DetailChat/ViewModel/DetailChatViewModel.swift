@@ -6,10 +6,30 @@
 //
 
 import Foundation
+import RxSwift
 
-class DetailChatViewModel{
+class DetailChatViewModel : ViewModelType{
+    
+    var input: Input
+    var output: Output
+    
+    struct Input {
+        let back : AnyObserver<Void>
+        
+    }
+    
+    struct Output{
+        let  back : Observable<Void>
+        
+    }
+    
+    private let backSubject = PublishSubject<Void>()
     
     init() {
+        
+        self.input = Input(back: backSubject.asObserver())
+        
+        self.output = Output(back: backSubject.asObservable())
         
     }
     
@@ -22,12 +42,12 @@ class DetailChatViewModel{
     }
     
     @objc private func handleNotification(notification: NSNotification){
-        if let chat = notification.object as? Chat {
+        if let chat = notification.object as? ChatBody {
             
         }
         
     }
-
+    
     deinit {
         removeNotification()
     }
