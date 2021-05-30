@@ -15,15 +15,36 @@ class ChatTableViewCell: UITableViewCell {
     @IBOutlet var lastMessagePreviewLabel: UILabel!
     @IBOutlet var lastMessageTimeLabel: UILabel!
     
+    var viewModel: Chat! {
+        didSet {
+            self.configure()
+        }
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         setupViews()
     }
-
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
-      
+        
+        
+    }
+    
+    private func configure() {
+        if viewModel.senders.count > 2{
+            dialogTitleLabel.text = "Group \(viewModel.senders.count)"
+        }
+        else
+        {
+            dialogTitleLabel.text = viewModel.senders.last?.displayName
+        }
+        lastMessagePreviewLabel.text = viewModel.chatBody.messages.last?.kind.getValue()
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        lastMessageTimeLabel.text = formatter.string(from:viewModel.chatBody.messages.last!.sentDate)
+        
     }
     
     private func setupViews(){
