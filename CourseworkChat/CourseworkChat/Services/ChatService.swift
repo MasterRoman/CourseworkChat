@@ -16,7 +16,29 @@ class ChatService{
         registerNotifications()
     }
     
-
+    func getChats()->[Chat]{
+        return Array(chatSource.values)
+    }
+    
+    func getChat(by id:UUID) -> Chat?{
+        return chatSource[id]
+    }
+    
+    func sendMessage(message : ChatBody){
+        do {
+            try networkManager.send(message: .newMessage(message: message))
+        } catch (let error) {
+            print(error)
+        }
+    }
+    
+    func sendNewChat(chat : Chat){
+        do {
+            try networkManager.send(message: .newChat(chat: chat))
+        } catch (let error) {
+            print(error)
+        }
+    }
     
     private func registerNotifications(){
         NotificationCenter.default.addObserver(self, selector: #selector(handleNewChatNotification), name: .newChat, object: nil)
@@ -41,7 +63,7 @@ class ChatService{
             if let chatBody = notification.object as? ChatBody {
                 let id = chatBody.chatId
                 chatSource[id]?.chatBody.messages.append(contentsOf: chatBody.messages)
-        
+                
             }
         }
     }
