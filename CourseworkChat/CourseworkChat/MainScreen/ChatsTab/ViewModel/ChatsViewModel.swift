@@ -35,6 +35,7 @@ class ChatsViewModel : ViewModelType {
         
         let chats = chatService.getChats()
         var models : [ChatCellViewModel] = []
+        
         for chat in chats {
             let model = ChatCellViewModel(from: chat)
             models.append(model)
@@ -46,31 +47,41 @@ class ChatsViewModel : ViewModelType {
         self.output = Output(selectedhShow: selectedCell.asObservable(), chats: chatsRelay.asObservable())
         
         
-        
-        registerNotifications()
-    }
-    
-    private func registerNotifications(){
-        NotificationCenter.default.addObserver(self, selector: #selector(handleNewChatNotification), name: .newChat, object: nil)
+        getNewChat()
+        getNewMessages()
         
     }
     
-    private func removeNotifications(){
-        NotificationCenter.default.removeObserver(self, name: .newChat, object: nil)
-    }
     
-    @objc private func handleNewChatNotification(notification: NSNotification){
-        if let chat = notification.object as? Chat {
-            //            let newChat = Observable.of([chat])
-            //            output.chats = Observable<[Chat]>.combineLatest(output.chats, newChat){
-            //                $1 + $0
-            //            }
-            //          chatsRelay.accept([chat] + chatsSubject.value)
+    private func getNewChat(){
+        
+        self.chatService.getNewChat = { [unowned self] chat in
+            DispatchQueue.global().async(group: nil, qos: .utility, flags: .barrier, execute: {
+                let model = ChatCellViewModel(from: chat)
+                chatsRelay.accept([model] + chatsRelay.value)
+            })
         }
+    }
+    
+    private func getNewMessages(){
         
+        self.chatService.getNewMessages = { [unowned self] messages in
+            var chats = self.chatsRelay.value
+            if let index = chats.firstIndex(where: {$0.chatId == messages.chatId}) {
+                var chat = chats[index]
+                chat.configure(with: messages)
+                chats[index] = chat
+            }
+            
+            DispatchQueue.main.async(group: nil, qos: .userInteractive, flags: .barrier, execute: {
+                self.chatsRelay.accept(chats)
+            })
+        }
     }
     
     deinit {
-        removeNotifications()
+        self.chatService.getNewChat = nil
+        self.chatService.getNewMessages = nil
     }
+    
 }
