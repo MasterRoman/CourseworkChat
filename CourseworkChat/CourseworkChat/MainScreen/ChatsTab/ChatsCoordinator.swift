@@ -24,10 +24,10 @@ class ChatsCoordinator : BaseCoordinator<Void> {
         let viewModel = ChatsViewModel(networkManager: networkManager)
         viewController.viewModel = viewModel
         
-        viewModel.selectedhShow
-            .subscribe(onNext: { [weak self] _ in
+        viewModel.output.selectedhShow
+            .subscribe(onNext: { [weak self] chat in
                 guard let self = self else {return}
-                self.showDetailChatCoordinator(with: self.navigationController)
+                self.showDetailChatCoordinator(with: chat, navigationController: self.navigationController)
             }).disposed(by: disposeBag)
         
         
@@ -35,10 +35,10 @@ class ChatsCoordinator : BaseCoordinator<Void> {
         return Observable.never()
     }
     
-    private func showDetailChatCoordinator(with navigationController : UINavigationController) {
-        let detailChatCoordinator = DetailChatCoordinator(with: navigationController, networkManager: networkManager)
+    private func showDetailChatCoordinator(with chat: Chat,navigationController : UINavigationController) {
+        let detailChatCoordinator = DetailChatCoordinator(with: chat, navigationController: navigationController, networkManager: networkManager)
         coordinate(to: detailChatCoordinator)
-            .subscribe()
+            .subscribe(onNext: {self.navigationController.popViewController(animated: true)})
             .disposed(by: disposeBag)
     }
     
