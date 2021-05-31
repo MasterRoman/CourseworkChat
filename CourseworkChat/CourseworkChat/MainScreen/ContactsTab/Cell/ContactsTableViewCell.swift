@@ -11,6 +11,12 @@ class ContactsTableViewCell: UITableViewCell {
     @IBOutlet var contactIconImageView: UIImageView!
     @IBOutlet var contactNameLabel: UILabel!
     
+    var viewModel : ContactCellViewModel!{
+        didSet{
+            configure()
+        }
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         setupViews()
@@ -23,6 +29,12 @@ class ContactsTableViewCell: UITableViewCell {
         contactIconImageView.layer.borderColor = UIColor.white.cgColor
         contactIconImageView.layer.cornerRadius = contactIconImageView.frame.size.width / 2
         contactIconImageView.clipsToBounds = true
+    }
+    
+    private func configure() {
+        contactIconImageView.image = viewModel.icon
+        contactNameLabel.text = viewModel.name
+    
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {
