@@ -9,7 +9,7 @@ import Foundation
 
 enum SendReceiveProtocol : Codable{
     enum CodingKeys: CodingKey {
-        case checkLogin,registration,authorization,newChat,newMessage,offline
+        case checkLogin,registration,authorization,newChat,newMessage,newContact,offline
     }
     
     init(from decoder: Decoder) throws {
@@ -31,6 +31,9 @@ enum SendReceiveProtocol : Codable{
         case .newMessage:
             let message = try container.decode(ChatBody.self, forKey: .newMessage)
             self = .newMessage(message: message)
+        case .newContact:
+            let login = try container.decode(String.self, forKey: .newContact)
+            self = .newContact(login: login)
         case .offline:
             let login = try container.decode(String.self, forKey: .offline)
             self = .offline(login: login)
@@ -57,9 +60,10 @@ enum SendReceiveProtocol : Codable{
             try container.encode(chat, forKey: .newChat)
         case .newMessage(message: let message):
             try container.encode(message, forKey: .newMessage)
+        case .newContact(login: let login):
+            try container.encode(login, forKey: .newContact)
         case .offline(login: let login):
             try container.encode(login, forKey: .offline)
-       
         }
     }
     
@@ -68,6 +72,7 @@ enum SendReceiveProtocol : Codable{
     case authorization(credentials : Credentials)
     case newChat(chat:Chat)
     case newMessage(message:ChatBody)
+    case newContact(login:String)
     case offline(login:String)
     
 }
