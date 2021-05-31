@@ -73,6 +73,11 @@ class ChatsViewController: UIViewController {
     
     
     private func setupBindings(){
+        viewModel.output.reload
+            .subscribe(onNext: {
+                self.tableView.reloadData()
+            })
+            .disposed(by: disposeBag)
         
     }
     

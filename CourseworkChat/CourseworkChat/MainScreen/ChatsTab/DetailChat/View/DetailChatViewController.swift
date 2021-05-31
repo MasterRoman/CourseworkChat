@@ -8,6 +8,7 @@
 import UIKit
 import RxSwift
 import MessageKit
+import InputBarAccessoryView
 
 class DetailChatViewController: MessagesViewController {
     
@@ -25,6 +26,7 @@ class DetailChatViewController: MessagesViewController {
         messagesCollectionView.messagesDataSource = self
         messagesCollectionView.messagesDisplayDelegate = self
         messagesCollectionView.messagesLayoutDelegate = self
+        messageInputBar.delegate = self
         
         if let layout = messagesCollectionView.collectionViewLayout as? MessagesCollectionViewFlowLayout {
             layout.setMessageOutgoingAvatarSize(.zero)
@@ -53,15 +55,24 @@ class DetailChatViewController: MessagesViewController {
     
     private func setupMainBindings(){
         viewModel.output.reload
-            .take(1)
             .observeOn(MainScheduler.instance)
             .bind(onNext: {
                 _ in
                 self.messagesCollectionView.reloadData()
+                self.messagesCollectionView.scrollToLastItem(animated: true)
             })
             
             .disposed(by: disposeBag)
         
+        self.messageInputBar.sendButton.rx
+            .tap
+            .bind(to: viewModel.input.send)
+            .disposed(by: disposeBag)
+        
+        self.messageInputBar.inputTextView.rx
+            .text.orEmpty
+            .bind(to: viewModel.input.messageText)
+            .disposed(by: disposeBag)
     }
     
 }
@@ -149,5 +160,12 @@ extension DetailChatViewController : MessagesDisplayDelegate,MessagesLayoutDeleg
             }
         }
         return 20
+    }
+}
+
+
+extension DetailChatViewController : InputBarAccessoryViewDelegate{
+    func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith text: String) {
+        inputBar.inputTextView.text = ""
     }
 }

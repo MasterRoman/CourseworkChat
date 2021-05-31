@@ -7,17 +7,22 @@
 
 import Foundation
 import RxSwift
+import RxCocoa
 
 class DetailChatViewModel : ViewModelType{
     
     var input: Input
     var output: Output
     
+    private let disposeBag = DisposeBag()
+    
     private let chatService : ChatService
     
     struct Input {
         let back : AnyObserver<Void>
         
+        let messageText : AnyObserver<String>
+        let send : AnyObserver<Void>
     }
     
     struct Output{
@@ -28,16 +33,46 @@ class DetailChatViewModel : ViewModelType{
     
     private let backSubject = PublishSubject<Void>()
     private let reloadSubject = PublishSubject<Void>()
+    private let textSubject =  BehaviorSubject<String>(value: "")
+    private let sendSubject = PublishSubject<Void>()
     
     init(with chat : Chat,chatService : ChatService) {
         self.chatService = chatService
         
-        self.input = Input(back: backSubject.asObserver())
+        self.input = Input(back: backSubject.asObserver(), messageText: textSubject.asObserver(), send: sendSubject.asObserver())
         self.output = Output(back: backSubject.asObservable(), chat: chat, reload: reloadSubject.asObservable())
         
-    
+        
+        self.sendSubject.asObservable().subscribe(onNext: { [unowned self] in
+            do{
+                let text = try textSubject.value()
+                if (text.count > 0){
+                    makeNewMessage(text: text)
+                }
+            }catch{
+                return
+            }
+            
+        }).disposed(by: disposeBag)
         
         registerNotification()
+    }
+    
+    private func makeNewMessage(text : String){
+        let chat = self.output.chat
+        let date = Date()
+        let textHash = text.hashValue
+        let messageId = String(textHash) + String(date.hashValue)
+        let message = Message(sender: chat.senders[0], messageId: messageId, sentDate: date, kind: .text(text))
+        
+        chat.chatBody.messages.append(message)
+        reloadSubject.onNext(())
+        
+        DispatchQueue.global(qos: .utility).async {
+            let chatId = chat.chatBody.chatId
+            let chatBody = ChatBody(chatId: chatId, messages: [message])
+            self.chatService.sendMessage(message: chatBody)
+        }
     }
     
     private func registerNotification(){
@@ -51,8 +86,9 @@ class DetailChatViewModel : ViewModelType{
     @objc private func handleNotification(notification: NSNotification){
         DispatchQueue.main.async {
             if let chat = notification.object as? ChatBody {
-                self.output.chat.chatBody.messages.append(contentsOf: chat.messages)
-                self.reloadSubject.onNext(())
+                if chat.chatId == self.output.chat.chatBody.chatId{
+                    self.reloadSubject.onNext(())
+                }
             }
         }
     }
