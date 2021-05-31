@@ -9,7 +9,7 @@ import Foundation
 
 class ChatService{
     private let networkManager : NetworkClient
-    var chatSource = Dictionary<UUID,Chat>()
+    private var chatSource = Dictionary<UUID,Chat>()
     
     var getNewChat : ((_ chat : Chat) -> (Void))?
     var getNewMessages : ((_ messages : ChatBody) -> (Void))?
