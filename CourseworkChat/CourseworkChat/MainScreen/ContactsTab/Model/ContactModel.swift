@@ -6,3 +6,9 @@
 //
 
 import Foundation
+
+class Contact : Codable{
+    let login : String
+    let name : String?
+    let surname : String?
+}
