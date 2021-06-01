@@ -16,9 +16,6 @@ class MainTabBarController: UITabBarController {
         self.tabBar.barStyle = .black
         self.tabBar.barTintColor = .black
         self.tabBar.tintColor = UIColor.white
-        
-        self.selectedIndex = 1
-        
     }
     
 }

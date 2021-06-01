@@ -41,6 +41,8 @@ class MainCoordinator : BaseCoordinator<Void>{
                                             chatsNavigationController,
                                             settingsNavigationController]
         
+        tabBarController.selectedIndex = 1
+        
         navigationController.pushViewController(tabBarController, animated: true)
         
         
