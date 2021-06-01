@@ -6,18 +6,23 @@
 //
 
 import UIKit
+import RxSwift
 
 class ContactsViewController: UIViewController {
     
     private var tableView : UITableView!
     private var searchController : UISearchController!
     
+    var viewModel : ContactsViewModel!
+    
+    private let disposeBag = DisposeBag()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
         bindTableView()
         
-        
+        setupAddButton()
     }
     
     private func setupViews(){
@@ -35,11 +40,7 @@ class ContactsViewController: UIViewController {
         ])
         
         self.navigationItem.title = "Contacts"
-        
-        let rightBarButtonItem = UIBarButtonItem()
-        rightBarButtonItem.style = .plain
-        rightBarButtonItem.image = UIImage(systemName: "plus")
-        self.navigationItem.rightBarButtonItem = rightBarButtonItem
+       
         
         self.searchController = UISearchController()
         self.searchController.searchBar.sizeToFit()
@@ -53,30 +54,39 @@ class ContactsViewController: UIViewController {
         self.searchController.searchBar.delegate = self //MARK: FIX
     }
     
+    private func setupAddButton(){
+        
+        
+        let rightBarButtonItem = UIBarButtonItem()
+        rightBarButtonItem.style = .plain
+        rightBarButtonItem.image = UIImage(systemName: "plus")
+       
+        rightBarButtonItem.rx
+            .tap
+            .bind(to: viewModel.input.add)
+            .disposed(by: disposeBag)
+        
+        self.navigationItem.rightBarButtonItem = rightBarButtonItem
+    }
+    
     private func bindTableView() {
         tableView.register(UINib(nibName:ContactsTableViewCell.getNibName() , bundle: nil), forCellReuseIdentifier: ContactsTableViewCell.getId())
-        tableView.dataSource = self
-        tableView.delegate = self
+        tableView.rx.setDelegate(self).disposed(by: disposeBag)
+        
+        viewModel.output.contacts
+            .bind(to:tableView.rx.items(cellIdentifier: ContactsTableViewCell.getId(), cellType: ContactsTableViewCell.self)){row,viewModel,cell in
+                cell.viewModel = viewModel
+            }.disposed(by: disposeBag)
     }
     
 }
 
-extension ContactsViewController : UITableViewDataSource, UITableViewDelegate{
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: ContactsTableViewCell.getId(), for: indexPath) as! ContactsTableViewCell
-        cell.contactNameLabel.text = "Roma"
-        return cell
-    }
-    
-    
+extension ContactsViewController : UITableViewDelegate{
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 70
     }
 }
+
 
 extension ContactsViewController : UISearchBarDelegate{
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
