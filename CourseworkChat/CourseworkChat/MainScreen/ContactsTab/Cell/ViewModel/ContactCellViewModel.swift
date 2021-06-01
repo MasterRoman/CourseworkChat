@@ -17,4 +17,8 @@ class ContactCellViewModel{
         self.icon = icon
         self.name = login
     }
+    
+    init(from contact : Contact) {
+        self.name = contact.login
+    }
 }
