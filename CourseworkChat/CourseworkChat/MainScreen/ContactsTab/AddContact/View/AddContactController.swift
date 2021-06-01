@@ -8,73 +8,43 @@
 import UIKit
 import RxSwift
 
-class AddContactAlertController: UIAlertController {
-    
-    var addButton : UIAlertAction!
-    var cancelButton : UIAlertAction!
-    var textField : UITextField!
+class AddContactController : UIAlertController {
     
     private let disposeBag = DisposeBag()
     
     var viewModel : AddContactViewModel!
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        setupViews()
-        setupBindings()
+        
+        setupViewsAndBindings()
     }
     
     
     
-    private func setupViews(){
+    private func setupViewsAndBindings(){
         self.title = "Add contact"
         
-        let addButton = UIButton(type: .system)
-        addButton.setTitle("Add", for: .normal)
-        addButton.translatesAutoresizingMaskIntoConstraints = false
+        let addAction = UIAlertAction(title: "Add", style: .default){ [weak self] _ in
+            self?.viewModel.input.add.onNext(())
+        }
         
-        self.view.addSubview(addButton)
-        self.addButton = addButton
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel){ [weak self] _ in
+            self?.viewModel.input.cancel.onNext(())
+        }
         
-        let cancelButton = UIButton(type: .system)
-        cancelButton.setTitle("Cancel", for: .normal)
-        cancelButton.translatesAutoresizingMaskIntoConstraints = false
         
-        self.view.addSubview(cancelButton)
-        self.cancelButton = cancelButton
+        self.addTextField { [weak self] (textField) in
+            guard let self = self else {return}
+            textField.placeholder = "Nickname"
+            textField.rx
+                .text.orEmpty
+                .bind(to: self.viewModel.input.text)
+                .disposed(by: self.disposeBag)
+        }
         
-        let textField = UITextField()
-        textField.placeholder = "Login"
-        textField.clearButtonMode = .whileEditing
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        
-        self.textField = textField
-        
-        self.textFields?.append(self.textField)
-        
-        let action = UIAlertAction()
-        self.addAction(<#T##action: UIAlertAction##UIAlertAction#>)
+        self.addAction(addAction)
+        self.addAction(cancelAction)
     }
-    
-    
-    private func setupBindings(){
-        self.addButton.rx
-            .tap
-            .bind(to: viewModel.input.add)
-            .disposed(by: disposeBag)
-        
-        self.cancelButton.rx
-            .tap
-            .bind(to: viewModel.input.cancel)
-            .disposed(by: disposeBag)
-        
-        self.textField.rx
-            .text.orEmpty
-            .bind(to: viewModel.input.text)
-            .disposed(by: disposeBag)
-    }
-    
-    
 
 }
