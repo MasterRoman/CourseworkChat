@@ -48,10 +48,10 @@ class ContactsViewModel : ViewModelType{
         self.input = Input(add: addSubject.asObserver(), reload: reloadSubject.asObserver())
         self.output = Output(contacts: contactsRelay.asObservable(), reload: reloadSubject.asObservable(), addShow: addSubject.asObservable())
         
-        getNewContact()
+        receiveNewContact()
     }
     
-    private func getNewContact(){
+    private func receiveNewContact(){
         
         self.contactsService.getNewContact = { [unowned self] contact in
             DispatchQueue.global().async(group: nil, qos: .utility, flags: .barrier, execute: {
