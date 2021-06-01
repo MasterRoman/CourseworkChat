@@ -30,8 +30,8 @@ class ContactsService{
     func addNewContact(login : String){
         do {
             let user = userManager.getUserInfo()
-            let login = user?["Login"] as! String
-            let contact = Contact(with: login, name: nil, surname: nil)
+            let localLogin = user?["Login"] as! String
+            let contact = Contact(with: localLogin, name: nil, surname: nil)
             try networkManager.send(message: .newContact(login: login, contact: contact))
         } catch (let error) {
             print(error)
