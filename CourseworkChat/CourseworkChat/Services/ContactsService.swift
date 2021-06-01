@@ -8,13 +8,15 @@
 import Foundation
 
 class ContactsService{
+    private let userManager : UserManager
     private let networkManager : NetworkClient
     private var contactsSource = Dictionary<String,Contact>()
     
     var getNewContact : ((_ contact : Contact) -> (Void))?
     
-    init(with networkManager : NetworkClient) {
+    init(with networkManager : NetworkClient,userManager : UserManager) {
         self.networkManager = networkManager
+        self.userManager = userManager
     }
     
     func getContacts() -> [Contact] {
@@ -27,7 +29,10 @@ class ContactsService{
     
     func addNewContact(login : String){
         do {
-            try networkManager.send(message: .newContact(login: login))
+            let user = userManager.getUserInfo()
+            let login = user?["Login"] as! String
+            let contact = Contact(with: login, name: nil, surname: nil)
+            try networkManager.send(message: .newContact(login: login, contact: contact))
         } catch (let error) {
             print(error)
         }

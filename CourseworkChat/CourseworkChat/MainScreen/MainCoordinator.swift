@@ -25,7 +25,7 @@ class MainCoordinator : BaseCoordinator<Void>{
         
         let contactsNavigationController = UINavigationController()
         contactsNavigationController.tabBarItem = UITabBarItem(tabBarSystemItem: .contacts, tag: 0)
-        let contactService = ContactsService(with: sessionService.networkManager)
+        let contactService = ContactsService(with: sessionService.networkManager, userManager: sessionService.userManager)
         let contactsCoordinator = ContactsCoordinator(with: contactsNavigationController, contactService: contactService)
         
         let chatsNavigationController = UINavigationController()

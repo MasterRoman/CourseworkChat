@@ -32,8 +32,10 @@ enum SendReceiveProtocol : Codable{
             let message = try container.decode(ChatBody.self, forKey: .newMessage)
             self = .newMessage(message: message)
         case .newContact:
-            let login = try container.decode(String.self, forKey: .newContact)
-            self = .newContact(login: login)
+            var nestedContainer = try container.nestedUnkeyedContainer(forKey: .newContact)
+            let login = try nestedContainer.decode(String.self)
+            let contact = try nestedContainer.decode(Contact.self)
+            self = .newContact(login: login, contact: contact)
         case .offline:
             let login = try container.decode(String.self, forKey: .offline)
             self = .offline(login: login)
@@ -60,10 +62,13 @@ enum SendReceiveProtocol : Codable{
             try container.encode(chat, forKey: .newChat)
         case .newMessage(message: let message):
             try container.encode(message, forKey: .newMessage)
-        case .newContact(login: let login):
-            try container.encode(login, forKey: .newContact)
+        case .newContact(login: let login, contact: let contact):
+            var nestedContainer = container.nestedUnkeyedContainer(forKey: .newContact)
+            try nestedContainer.encode(login)
+            try nestedContainer.encode(contact)
         case .offline(login: let login):
             try container.encode(login, forKey: .offline)
+        
         }
     }
     
@@ -72,7 +77,7 @@ enum SendReceiveProtocol : Codable{
     case authorization(credentials : Credentials)
     case newChat(chat:Chat)
     case newMessage(message:ChatBody)
-    case newContact(login:String)
+    case newContact(login:String,contact : Contact)
     case offline(login:String)
     
 }
