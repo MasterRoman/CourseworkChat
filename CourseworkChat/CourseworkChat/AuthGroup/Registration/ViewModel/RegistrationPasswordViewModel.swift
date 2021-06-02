@@ -62,9 +62,15 @@ class RegistrationPasswordViewModel : RegistrationViewModelType{
     
     @objc private func handleNotification(notification: NSNotification){
         if let credentials = notification.object as? Credentials {
-            if (credentials.login == login){
+            do{
+            let password = try self.textSubject.value()
+            if (credentials.password == password){
                 self.successRelay.accept(true)
                 self.sessionService.userManager.registerUser(login: login, password: credentials.password, isActive: true)
+            }
+            }catch (let error){
+                print(error)
+                return
             }
             
         }

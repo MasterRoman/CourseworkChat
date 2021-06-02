@@ -34,28 +34,34 @@ class NetworkManager : NetworkClient {
             while true {
                 do{
                     try self.socket.receive({ data in
-                        var result : SendReceiveProtocol
-                        do {
-                            result = try self.decoder.decode(SendReceiveProtocol.self, from: data)
-                            switch result{
-                            case .checkLogin(login: let login):
-                                NotificationCenter.default.post(name: .checkLogin, object: login)
-                            case .registration(credentials : let credentials):
-                                NotificationCenter.default.post(name: .registration, object: credentials)
-                            case .authorization(credentials : let credentials):
-                                NotificationCenter.default.post(name: .authorization, object: credentials)
-                            case .newChat(chat: let chat):
-                                NotificationCenter.default.post(name: .newChat, object: chat)
-                            case .newMessage(message: let message):
-                                NotificationCenter.default.post(name: .newMessage, object: message)
-                            case .newContact(login: let login):
-                                NotificationCenter.default.post(name: .newContact, object: login)
-                            case .offline(login: let login):
-                                NotificationCenter.default.post(name: .offline, object: login)
+                        if data.count > 0 {
+                            var result : SendReceiveProtocol
+                            do {
+                                result = try self.decoder.decode(SendReceiveProtocol.self, from: data)
+                                switch result{
+                                case .checkLogin(login: let login):
+                                    NotificationCenter.default.post(name: .checkLogin, object: login)
+                                case .registration(credentials : let credentials):
+                                    NotificationCenter.default.post(name: .registration, object: credentials)
+                                case .authorization(credentials : let credentials):
+                                    NotificationCenter.default.post(name: .authorization, object: credentials)
+                                case .newChat(chat: let chat):
+                                    NotificationCenter.default.post(name: .newChat, object: chat)
+                                case .newMessage(message: let message):
+                                    NotificationCenter.default.post(name: .newMessage, object: message)
+                                case .newContact(login: let login):
+                                    NotificationCenter.default.post(name: .newContact, object: login)
+                                case .offline(login: let login):
+                                    NotificationCenter.default.post(name: .offline, object: login)
+                                }
+                                
+                            } catch (_) {
+                                
                             }
-                            
-                        } catch (_) {
-                        
+                        } else
+                        {
+                            print("connection losed")
+                            return
                         }
                     })
                 }

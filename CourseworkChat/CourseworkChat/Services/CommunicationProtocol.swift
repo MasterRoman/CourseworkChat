@@ -34,7 +34,7 @@ enum SendReceiveProtocol : Codable{
         case .newContact:
             var nestedContainer = try container.nestedUnkeyedContainer(forKey: .newContact)
             let login = try nestedContainer.decode(String.self)
-            let contact = try nestedContainer.decode(Contact.self)
+            let contact = try nestedContainer.decode(Contact?.self)
             self = .newContact(login: login, contact: contact)
         case .offline:
             let login = try container.decode(String.self, forKey: .offline)
@@ -77,7 +77,7 @@ enum SendReceiveProtocol : Codable{
     case authorization(credentials : Credentials)
     case newChat(chat:Chat)
     case newMessage(message:ChatBody)
-    case newContact(login:String,contact : Contact)
+    case newContact(login:String,contact : Contact?)
     case offline(login:String)
     
 }
