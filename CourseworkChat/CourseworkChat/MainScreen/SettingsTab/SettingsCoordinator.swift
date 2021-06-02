@@ -23,6 +23,6 @@ class SettingsCoordinator : BaseCoordinator<Void> {
         let viewModel = SettingsViewModel(with: sessionService)
         viewController.viewModel = viewModel
         self.navigationController.pushViewController(viewController, animated: true)
-        return Observable.never()
+        return viewModel.sessionService.status.filter{!$0!}.map { _ in Void() }
     }
 }

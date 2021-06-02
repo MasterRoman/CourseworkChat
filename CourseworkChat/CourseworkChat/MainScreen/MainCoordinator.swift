@@ -56,10 +56,7 @@ class MainCoordinator : BaseCoordinator<Void>{
             .disposed(by: disposeBag)
         
         
-        coordinate(to: settingsCoordinator)
-            .subscribe()
-            .disposed(by: disposeBag)
-        
-        return Observable.never()
+        return coordinate(to: settingsCoordinator)
+         
     }
 }
