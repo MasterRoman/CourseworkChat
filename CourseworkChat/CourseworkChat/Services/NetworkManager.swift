@@ -49,8 +49,8 @@ class NetworkManager : NetworkClient {
                                     NotificationCenter.default.post(name: .newChat, object: chat)
                                 case .newMessage(message: let message):
                                     NotificationCenter.default.post(name: .newMessage, object: message)
-                                case .newContact(login: let login):
-                                    NotificationCenter.default.post(name: .newContact, object: login)
+                                case .newContact(login: _,contact : let contact):
+                                    NotificationCenter.default.post(name: .newContact, object: contact)
                                 case .offline(login: let login):
                                     NotificationCenter.default.post(name: .offline, object: login)
                                 }

@@ -17,6 +17,8 @@ class ContactsService{
     init(with networkManager : NetworkClient,userManager : UserManager) {
         self.networkManager = networkManager
         self.userManager = userManager
+        
+        registerNotifications()
     }
     
     func getContacts() -> [Contact] {
