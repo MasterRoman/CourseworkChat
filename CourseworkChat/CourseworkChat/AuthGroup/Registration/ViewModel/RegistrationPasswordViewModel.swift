@@ -23,15 +23,16 @@ class RegistrationPasswordViewModel : RegistrationViewModelType{
     private let nextSubject = PublishSubject<Void>()
     private let textSubject = BehaviorSubject<String>(value: "")
     private let successRelay = BehaviorRelay<Bool>(value: false)
+    private let backSubject = PublishSubject<Void>()
     
     init(with login : String,sessionService : SessionService) {
         self.login = login
         self.sessionService = sessionService
         
         
-        self.output = Output(nextShow: nextSubject.asObservable(), isSuccess: successRelay.asObservable())
+        self.output = Output(nextShow: nextSubject.asObservable(), isSuccess: successRelay.asObservable(), back: backSubject.asObservable())
         
-        self.input = Input(next: nextSubject.asObserver(), text: textSubject.asObserver())
+        self.input = Input(next: nextSubject.asObserver(), text: textSubject.asObserver(), back: backSubject.asObserver())
         
         self.output.nextShow.subscribe(onNext: { [weak self] in
             guard let self = self else {return}

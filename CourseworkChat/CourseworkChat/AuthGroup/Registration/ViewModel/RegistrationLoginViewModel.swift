@@ -24,6 +24,7 @@ class RegistrationLoginViewModel : RegistrationViewModelType{
     private let textSubject = BehaviorSubject<String>(value: "")
     private let successRelay = BehaviorRelay<Bool>(value: false)
     private let errorSubject = BehaviorSubject<String>(value: "")
+    private let backSubject = PublishSubject<Void>()
     
     var login = ""
     
@@ -31,10 +32,10 @@ class RegistrationLoginViewModel : RegistrationViewModelType{
         self.networkManager = networkManager
         
         
-        self.input = Input(next: nextSubject.asObserver(), text: textSubject.asObserver())
+        self.input = Input(next: nextSubject.asObserver(), text: textSubject.asObserver(), back: backSubject.asObserver())
         
        
-        self.output = Output(nextShow: nextSubject.asObservable(), isSuccess: successRelay.asObservable())
+        self.output = Output(nextShow: nextSubject.asObservable(), isSuccess: successRelay.asObservable(), back: backSubject.asObservable())
         
         self.output.nextShow.subscribe(onNext: { [weak self] in
             guard let self = self else {return}
@@ -71,7 +72,7 @@ class RegistrationLoginViewModel : RegistrationViewModelType{
             }
             else
             {
-                
+                self.successRelay.accept(false)
             }
             
         }

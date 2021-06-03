@@ -46,6 +46,7 @@ class RegistrationViewController : UIViewController {
         setupUserNameObserver()
         
         setupBindings()
+        setupBackButton()
     }
     
     private func setupViews(){
@@ -98,5 +99,19 @@ class RegistrationViewController : UIViewController {
             .disposed(by: disposeBag)
     }
     
+    private func setupBackButton(){
+        
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+        button.setTitle("Back", for: .normal)
+        button.sizeToFit()
+        
+        button.rx
+            .tap
+            .bind(to: viewModel.input.back)
+            .disposed(by: disposeBag)
+        
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
+    }
 }
 

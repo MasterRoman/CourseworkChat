@@ -36,7 +36,11 @@ class AuthCoordinator : BaseCoordinator<Void>{
     private func showRegistrationCoordinator(with navigationController : UINavigationController){
         let registrationCoordinator = RegistrationCoordinator(with: navigationController, sessionService : sessionService)
         coordinate(to: registrationCoordinator)
-            .subscribe()
-            .disposed(by: disposeBag)
+            .subscribe(onNext: { [weak self] in
+                guard let self = self else {return}
+                self.navigationController.isNavigationBarHidden = true
+                self.navigationController.popViewController(animated: true)
+            })
+            .disposed(by: self.disposeBag)
     }
 }

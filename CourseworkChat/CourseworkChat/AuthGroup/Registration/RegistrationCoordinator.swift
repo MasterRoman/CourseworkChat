@@ -23,29 +23,38 @@ class RegistrationCoordinator : BaseCoordinator<Void>{
         let viewModel = RegistrationLoginViewModel(with: sessionService.networkManager)
         viewController.viewModel = viewModel
         
-        viewModel.output.isSuccess
+        navigationController.isNavigationBarHidden = false
+        self.navigationController.pushViewController(viewController, animated: true)
+        
+        viewModel.output.isSuccess        ////////////FIX!
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self] success in
                 if (success){
                     guard let self = self else {return}
                     let passwordViewController = RegistrationViewController(with: .password)
-                    let viewModel = RegistrationPasswordViewModel(with: viewModel.login ,sessionService: self.sessionService)
-                    passwordViewController.viewModel = viewModel
-                    viewModel.output.isSuccess
+                    let passwordViewModel = RegistrationPasswordViewModel(with: viewModel.login ,sessionService: self.sessionService)
+                    passwordViewController.viewModel = passwordViewModel
+                    
+                    self.navigationController.pushViewController(passwordViewController, animated: true)
+                    
+                    passwordViewModel.output.back.subscribe(onNext: { [weak self] in
+                        self?.navigationController.popViewController(animated: true)
+                    }).disposed(by: self.disposeBag)
+                    
+                    passwordViewModel.output.isSuccess
                         .observeOn(MainScheduler.instance)
                         .subscribe(onNext: { [weak self] success in
                             if (success){
                                 guard let self = self else {return}
                                 self.navigationController.isNavigationBarHidden = true
                                 self.navigationController.popToRootViewController(animated: true)
+                                viewModel.input.back.onNext(())
                             }
                         }).disposed(by: self.disposeBag)
-                    self.navigationController.pushViewController(passwordViewController, animated: true)
                 }
             }).disposed(by: disposeBag)
         
-        navigationController.isNavigationBarHidden = false
-        self.navigationController.pushViewController(viewController, animated: true)
-        return Observable.never()
+        
+        return viewModel.output.back 
     }
 }

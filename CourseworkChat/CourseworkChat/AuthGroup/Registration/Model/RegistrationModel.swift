@@ -11,11 +11,13 @@ import RxSwift
 struct RegistrationInput {
     let next : AnyObserver<Void>
     let text : AnyObserver<String>
+    let back : AnyObserver<Void>
 }
 
 struct RegistrationOutput {
     let nextShow : Observable<Void>
     let isSuccess : Observable<Bool>
+    let back : Observable<Void>
 }
 
 
