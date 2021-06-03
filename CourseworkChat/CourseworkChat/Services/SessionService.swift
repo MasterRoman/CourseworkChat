@@ -28,7 +28,7 @@ class SessionService{
         self.networkManager = networkManager
         
         self.statusSubject = userManager.checkUserStatus() ?  BehaviorSubject<Bool?>(value: nil) : BehaviorSubject<Bool?>(value: false)
-    
+        
         checkAuth()
         registerNotification()
     }
@@ -51,7 +51,7 @@ class SessionService{
         DispatchQueue.global(qos: .userInitiated).async { [self] in
             do{
                 try self.networkManager.send(message: .authorization(credentials: credentials))
-                self.userManager.checkUserRegistration(login: credentials.login, password: credentials.password)
+                
                 self.credentials = credentials
             }
             catch
@@ -79,14 +79,17 @@ class SessionService{
         if let credentials = notification.object as? Credentials {
             if (credentials.login == "APPROVED"){
                 self.statusSubject.onNext(true)
-              
-            }
-            else
-            {
                 guard let locCredentials = self.credentials else {
                     return
                 }
-                self.userManager.registerUser(login:locCredentials.login, password:locCredentials.password, isActive: true)
+                if (!self.userManager.checkUserRegistration(login: locCredentials.login, password: locCredentials.password)){
+                    self.userManager.registerUser(login:locCredentials.login, password:locCredentials.password, isActive: true)
+                }
+                
+            }
+            else
+            {
+                
             }
             
         }
