@@ -37,15 +37,15 @@ class AuthorizationViewController: UIViewController {
         let hideGesture = UITapGestureRecognizer()
         self.view.addGestureRecognizer(hideGesture)
         
-        hideGesture.rx.event.subscribe({ _ in
-            self.view.endEditing(true)
+        hideGesture.rx.event.subscribe({[weak self] _ in
+            self?.view.endEditing(true)
         }).disposed(by: disposeBag)
     }
     
     private func setupLoginObserver(){
        
         viewModel.output.enable
-            .subscribe(onNext: { enabled in
+            .subscribe(onNext: { [unowned self]  enabled in
             self.loginButton.alpha = enabled ? 0.8 : 0.5
             self.loginButton.isEnabled = enabled
         }).disposed(by: disposeBag)

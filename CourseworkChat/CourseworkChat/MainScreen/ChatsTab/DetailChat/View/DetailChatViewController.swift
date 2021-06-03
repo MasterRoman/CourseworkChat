@@ -56,8 +56,7 @@ class DetailChatViewController: MessagesViewController {
     private func setupMainBindings(){
         viewModel.output.reload
             .observeOn(MainScheduler.instance)
-            .bind(onNext: {
-                _ in
+            .bind(onNext: { [unowned self] in
                 self.messagesCollectionView.reloadData()
                 self.messagesCollectionView.scrollToLastItem(animated: true)
             })
@@ -74,7 +73,6 @@ class DetailChatViewController: MessagesViewController {
             .bind(to: viewModel.input.messageText)
             .disposed(by: disposeBag)
     }
-    
 }
 
 

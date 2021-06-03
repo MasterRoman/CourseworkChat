@@ -28,11 +28,11 @@ class RegistrationCoordinator : BaseCoordinator<Void>{
         
         viewModel.output.isSuccess        ////////////FIX!
             .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [weak self] success in
+            .subscribe(onNext: { [weak self,weak viewModel] success in
                 if (success){
                     guard let self = self else {return}
                     let passwordViewController = RegistrationViewController(with: .password)
-                    let passwordViewModel = RegistrationPasswordViewModel(with: viewModel.login ,sessionService: self.sessionService)
+                    let passwordViewModel = RegistrationPasswordViewModel(with: viewModel!.login ,sessionService: self.sessionService)
                     passwordViewController.viewModel = passwordViewModel
                     
                     self.navigationController.pushViewController(passwordViewController, animated: true)
@@ -43,18 +43,18 @@ class RegistrationCoordinator : BaseCoordinator<Void>{
                     
                     passwordViewModel.output.isSuccess
                         .observeOn(MainScheduler.instance)
-                        .subscribe(onNext: { [weak self] success in
+                        .subscribe(onNext: { [weak self,weak viewModel] success in
                             if (success){
                                 guard let self = self else {return}
                                 self.navigationController.isNavigationBarHidden = true
                                 self.navigationController.popToRootViewController(animated: true)
-                                viewModel.input.back.onNext(())
+                                viewModel?.input.back.onNext(())
                             }
                         }).disposed(by: self.disposeBag)
                 }
             }).disposed(by: disposeBag)
         
         
-        return viewModel.output.back 
+        return viewModel.output.back
     }
 }

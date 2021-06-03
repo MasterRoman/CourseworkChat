@@ -70,8 +70,8 @@ class RegistrationViewController : UIViewController {
         let hideGesture = UITapGestureRecognizer()
         self.view.addGestureRecognizer(hideGesture)
         
-        hideGesture.rx.event.subscribe({ _ in
-            self.view.endEditing(true)
+        hideGesture.rx.event.subscribe({[weak self] _ in
+            self?.view.endEditing(true)
         }).disposed(by: disposeBag)
     }
     
@@ -80,7 +80,7 @@ class RegistrationViewController : UIViewController {
             .rx.text
             .map({($0!.count > 3)})
             .share(replay: 1)
-            .asObservable().subscribe(onNext: {enabled in
+            .asObservable().subscribe(onNext: {[unowned self] enabled in
                 self.nextButton.alpha = enabled ? 0.8 : 0.5
                 self.nextButton.isEnabled = enabled
                 
@@ -113,5 +113,6 @@ class RegistrationViewController : UIViewController {
         
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
     }
+
 }
 

@@ -31,9 +31,10 @@ class ChatsCoordinator : BaseCoordinator<Void> {
                 let chat = self.chatService.getChat(by: model.chatId)
                 guard let item = chat else {return}
                 self.showDetailChatCoordinator(with: item, navigationController: self.navigationController)
-                    .subscribe(onNext:{
+                    .subscribe(onNext:{ [weak self, weak viewModel] in
+                        guard let self = self else {return}
                         self.navigationController.popViewController(animated: true)
-                        viewModel.input.reload.onNext(())
+                        viewModel?.input.reload.onNext(())
                     })
                     .disposed(by: self.disposeBag)
             }).disposed(by: disposeBag)
