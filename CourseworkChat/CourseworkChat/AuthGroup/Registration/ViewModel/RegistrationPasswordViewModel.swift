@@ -67,7 +67,7 @@ class RegistrationPasswordViewModel : RegistrationViewModelType{
             let password = try self.textSubject.value()
             if (credentials.password == password){
                 self.successRelay.accept(true)
-                self.sessionService.userManager.registerUser(login: login, password: credentials.password, isActive: true)
+                self.sessionService.userManager.registerUser(login: login, password: credentials.password, isActive: false)
             }
             }catch (let error){
                 print(error)
