@@ -31,7 +31,7 @@ class MainCoordinator : BaseCoordinator<Void>{
         let chatsNavigationController = UINavigationController()
         let chatService = ChatService(networkManager: sessionService.networkManager)
         chatsNavigationController.tabBarItem = UITabBarItem(title: "Chats", image: UIImage(systemName: "message"), selectedImage: UIImage(systemName: "message.fill"))
-        let chatsCoordinator = ChatsCoordinator(with: chatsNavigationController, chatService:chatService, sessionService: sessionService)
+        let chatsCoordinator = ChatsCoordinator(with: chatsNavigationController, chatService:chatService, sessionService: sessionService, contactsService: contactService)
         
         let settingsNavigationController = UINavigationController()
         settingsNavigationController.tabBarItem = UITabBarItem(title: "Settings", image: UIImage(systemName: "gear"),tag: 2)

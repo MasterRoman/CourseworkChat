@@ -14,11 +14,13 @@ class ChatsCoordinator : BaseCoordinator<Void> {
     private let navigationController : UINavigationController
     private let chatService : ChatService
     private let sessionService : SessionService
+    private let contactsService : ContactsService
     
-    init(with navigationController : UINavigationController,chatService : ChatService,sessionService : SessionService) {
+    init(with navigationController : UINavigationController,chatService : ChatService,sessionService : SessionService,contactsService : ContactsService) {
         self.navigationController = navigationController
         self.chatService = chatService
         self.sessionService = sessionService
+        self.contactsService = contactsService
     }
     
     override func start() -> Observable<Void> {
@@ -42,6 +44,8 @@ class ChatsCoordinator : BaseCoordinator<Void> {
             }).disposed(by: disposeBag)
         
         
+        
+        
         self.navigationController.pushViewController(viewController, animated: true)
         return sessionService.status.filter{!$0!}.map { [weak self] _ in self?.navigationController.viewControllers.removeAll(); Void()}.take(1)
     }
@@ -49,6 +53,11 @@ class ChatsCoordinator : BaseCoordinator<Void> {
     private func showDetailChatCoordinator(with chat: Chat,navigationController : UINavigationController) -> Observable<Void> {
         let detailChatCoordinator = DetailChatCoordinator(with: chat, navigationController: navigationController, chatService : chatService)
         return coordinate(to: detailChatCoordinator)
+    }
+    
+    private func showAddChatCoordinator() -> Observable<Void> {
+        let addChatCoordinator = AddChatCoordinator(navigationController: navigationController, chatService : chatService, contactsService: contactsService)
+        return coordinate(to: addChatCoordinator)
     }
     
 }
