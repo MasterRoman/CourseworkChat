@@ -19,10 +19,6 @@ class DetailChatViewController: MessagesViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //    self.navigationItem.leftBarButtonItem = UIBarButtonItem( title: "Chats", style: .plain, target: nil, action: nil)
-        
-        
-        
         messagesCollectionView.messagesDataSource = self
         messagesCollectionView.messagesDisplayDelegate = self
         messagesCollectionView.messagesLayoutDelegate = self
@@ -36,6 +32,10 @@ class DetailChatViewController: MessagesViewController {
         
         setupBackButton()
         setupMainBindings()
+    }
+    
+    deinit {
+        print("DEINIT")
     }
     
     private func setupBackButton(){
@@ -56,7 +56,8 @@ class DetailChatViewController: MessagesViewController {
     private func setupMainBindings(){
         viewModel.output.reload
             .observeOn(MainScheduler.instance)
-            .bind(onNext: { [unowned self] in
+            .bind(onNext: { [weak self] in
+                guard let self = self else {return}
                 self.messagesCollectionView.reloadData()
                 self.messagesCollectionView.scrollToLastItem(animated: true)
             })

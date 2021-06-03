@@ -30,6 +30,7 @@ class SceneCoordinator: BaseCoordinator<Void> {
                 .subscribe(onNext: { [weak self] status in
                     guard let self = self else {return}
                     if status != nil{
+                        navigationController.popToRootViewController(animated: false)
                         navigationController.viewControllers.removeAll()
                         status! ?
                             self.showMainCoordinator(with: navigationController, sessionService: sessionService):

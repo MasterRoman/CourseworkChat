@@ -54,4 +54,8 @@ class ContactsCoordinator : BaseCoordinator<Void> {
                 
             })
     }
+    
+    deinit {
+        print("Deinit")
+    }
 }

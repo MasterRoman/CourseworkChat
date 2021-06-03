@@ -18,4 +18,8 @@ class MainTabBarController: UITabBarController {
         self.tabBar.tintColor = UIColor.white
     }
     
+    deinit {
+        self.viewControllers?.removeAll()
+    }
+    
 }
