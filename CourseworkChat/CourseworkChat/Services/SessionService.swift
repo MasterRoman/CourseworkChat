@@ -78,13 +78,14 @@ class SessionService{
     @objc private func handleNotification(notification: NSNotification){
         if let credentials = notification.object as? Credentials {
             if (credentials.login == "APPROVED"){
-                self.statusSubject.onNext(true)
                 guard let locCredentials = self.credentials else {
                     return
                 }
                 if (!self.userManager.checkUserRegistration(login: locCredentials.login, password: locCredentials.password)){
                     self.userManager.registerUser(login:locCredentials.login, password:locCredentials.password, isActive: true)
                 }
+                
+                self.statusSubject.onNext(true)
                 
             }
             else

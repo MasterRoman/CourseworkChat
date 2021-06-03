@@ -30,8 +30,8 @@ class SceneCoordinator: BaseCoordinator<Void> {
                 .subscribe(onNext: { [weak self] status in
                     guard let self = self else {return}
                     if status != nil{
-                        navigationController.popToRootViewController(animated: false)
-                        navigationController.viewControllers.removeAll()
+                   //     navigationController.popToRootViewController(animated: true)
+                   //     navigationController.viewControllers.removeAll()
                         status! ?
                             self.showMainCoordinator(with: navigationController, sessionService: sessionService):
                             self.showAuthCoordinator(with: navigationController, sessionService : sessionService)
@@ -51,14 +51,21 @@ class SceneCoordinator: BaseCoordinator<Void> {
     private func showAuthCoordinator(with navigationController : UINavigationController,sessionService : SessionService){
         let authCoordinator = AuthCoordinator(with: navigationController,sessionService: sessionService)
         coordinate(to: authCoordinator)
-            .subscribe()
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: {
+                navigationController.viewControllers.removeFirst()
+            
+            })
             .disposed(by: disposeBag)
     }
     
     private func showMainCoordinator(with navigationController : UINavigationController,sessionService : SessionService){
         let mainCoordinator = MainCoordinator(with: navigationController, sessionService: sessionService)
         coordinate(to: mainCoordinator)
-            .subscribe()
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: {
+                navigationController.viewControllers.removeFirst()
+            })
             .disposed(by: disposeBag)
     }
 }

@@ -13,10 +13,12 @@ class ChatsCoordinator : BaseCoordinator<Void> {
     
     private let navigationController : UINavigationController
     private let chatService : ChatService
+    private let sessionService : SessionService
     
-    init(with navigationController : UINavigationController,chatService : ChatService) {
+    init(with navigationController : UINavigationController,chatService : ChatService,sessionService : SessionService) {
         self.navigationController = navigationController
         self.chatService = chatService
+        self.sessionService = sessionService
     }
     
     override func start() -> Observable<Void> {
@@ -41,7 +43,7 @@ class ChatsCoordinator : BaseCoordinator<Void> {
         
         
         self.navigationController.pushViewController(viewController, animated: true)
-        return Observable.never()
+        return sessionService.status.filter{!$0!}.map { _ in Void() }
     }
     
     private func showDetailChatCoordinator(with chat: Chat,navigationController : UINavigationController) -> Observable<Void> {

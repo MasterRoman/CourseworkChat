@@ -26,12 +26,12 @@ class MainCoordinator : BaseCoordinator<Void>{
         let contactsNavigationController = UINavigationController()
         contactsNavigationController.tabBarItem = UITabBarItem(tabBarSystemItem: .contacts, tag: 0)
         let contactService = ContactsService(with: sessionService.networkManager, userManager: sessionService.userManager)
-        let contactsCoordinator = ContactsCoordinator(with: contactsNavigationController, contactService: contactService)
+        let contactsCoordinator = ContactsCoordinator(with: contactsNavigationController, contactService: contactService, sessionService: sessionService)
         
         let chatsNavigationController = UINavigationController()
         let chatService = ChatService(networkManager: sessionService.networkManager)
         chatsNavigationController.tabBarItem = UITabBarItem(title: "Chats", image: UIImage(systemName: "message"), selectedImage: UIImage(systemName: "message.fill"))
-        let chatsCoordinator = ChatsCoordinator(with: chatsNavigationController, chatService:chatService)
+        let chatsCoordinator = ChatsCoordinator(with: chatsNavigationController, chatService:chatService, sessionService: sessionService)
         
         let settingsNavigationController = UINavigationController()
         settingsNavigationController.tabBarItem = UITabBarItem(title: "Settings", image: UIImage(systemName: "gear"),tag: 2)

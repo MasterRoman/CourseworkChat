@@ -12,10 +12,12 @@ class ContactsCoordinator : BaseCoordinator<Void> {
     
     private let navigationController : UINavigationController
     private let contactService : ContactsService
+    private let sessionService : SessionService
     
-    init(with navigationController : UINavigationController,contactService : ContactsService) {
+    init(with navigationController : UINavigationController,contactService : ContactsService,sessionService : SessionService) {
         self.navigationController = navigationController
         self.contactService = contactService
+        self.sessionService = sessionService
     }
     
     override func start() -> Observable<Void> {
@@ -38,7 +40,7 @@ class ContactsCoordinator : BaseCoordinator<Void> {
         
         
         self.navigationController.pushViewController(viewController, animated: true)
-        return Observable.never()
+        return sessionService.status.filter{!$0!}.map { _ in Void() }
     }
     
     private func showAddContactCoordinator(navigationController : UINavigationController) -> Observable<Bool> {
