@@ -25,9 +25,6 @@ class ContactsViewController: UIViewController {
         setupAddButton()
     }
     
-    deinit {
-        print("DEINIT")
-    }
     
     private func setupViews(){
         self.tableView = UITableView()

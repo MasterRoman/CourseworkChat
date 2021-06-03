@@ -81,10 +81,6 @@ class ChatsViewController: UIViewController {
         
     }
     
-    deinit {
-        print("DEINIT")
-    }
-    
 }
 
 extension ChatsViewController : UITableViewDelegate{

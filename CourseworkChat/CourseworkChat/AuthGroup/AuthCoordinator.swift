@@ -30,7 +30,7 @@ class AuthCoordinator : BaseCoordinator<Void>{
             }).disposed(by: disposeBag)
     
         self.navigationController.pushViewController(viewController, animated: true)
-        return self.sessionService.status.filter {$0!}.map { _ in Void() }
+        return self.sessionService.status.filter {$0!}.map { _ in Void() }.take(1)
     }
     
     private func showRegistrationCoordinator(with navigationController : UINavigationController){

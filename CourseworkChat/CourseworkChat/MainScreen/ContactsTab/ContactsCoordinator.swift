@@ -40,7 +40,7 @@ class ContactsCoordinator : BaseCoordinator<Void> {
         
         
         self.navigationController.pushViewController(viewController, animated: true)
-        return sessionService.status.filter{!$0!}.map { _ in Void() }
+        return sessionService.status.filter{!$0!}.map { [weak self] _ in self?.navigationController.viewControllers.removeAll(); Void()}.take(1)
     }
     
     private func showAddContactCoordinator(navigationController : UINavigationController) -> Observable<Bool> {
@@ -55,9 +55,5 @@ class ContactsCoordinator : BaseCoordinator<Void> {
                 }
                 
             })
-    }
-    
-    deinit {
-        print("Deinit")
     }
 }
