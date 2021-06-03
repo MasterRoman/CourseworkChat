@@ -15,6 +15,7 @@ class SessionService{
     
     private let statusSubject : BehaviorSubject<Bool?>
     private let disposeBag = DisposeBag()
+    private var credentials : Credentials?
     
     var status : Observable<Bool?> {
         return statusSubject.asObservable()
@@ -51,6 +52,7 @@ class SessionService{
             do{
                 try self.networkManager.send(message: .authorization(credentials: credentials))
                 self.userManager.checkUserRegistration(login: credentials.login, password: credentials.password)
+                self.credentials = credentials
             }
             catch
             {
@@ -81,7 +83,10 @@ class SessionService{
             }
             else
             {
-             
+                guard let locCredentials = self.credentials else {
+                    return
+                }
+                self.userManager.registerUser(login:locCredentials.login, password:locCredentials.password, isActive: true)
             }
             
         }
