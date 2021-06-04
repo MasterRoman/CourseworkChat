@@ -34,7 +34,7 @@ class ChatsCoordinator : BaseCoordinator<Void> {
                 guard let model = cellModel else {return}
                 let chat = self.chatService.getChat(by: model.chatId)
                 guard let item = chat else {return}
-                self.showDetailChatCoordinator(with: item, navigationController: self.navigationController)
+                self.showDetailChatCoordinator(with: item,title : model.dialogTitle ,navigationController: self.navigationController)
                     .subscribe(onNext:{ [weak self, weak viewModel] in
                         guard let self = self else {return}
                         self.navigationController.popViewController(animated: true)
@@ -62,8 +62,8 @@ class ChatsCoordinator : BaseCoordinator<Void> {
         return sessionService.status.filter{!$0!}.map { [weak self] _ in self?.navigationController.viewControllers.removeAll(); Void()}.take(1)
     }
     
-    private func showDetailChatCoordinator(with chat: Chat,navigationController : UINavigationController) -> Observable<Void> {
-        let detailChatCoordinator = DetailChatCoordinator(with: chat, navigationController: navigationController, chatService : chatService)
+    private func showDetailChatCoordinator(with chat: Chat,title : String,navigationController : UINavigationController) -> Observable<Void> {
+        let detailChatCoordinator = DetailChatCoordinator(with: chat,title : title,navigationController: navigationController, chatService : chatService)
         return coordinate(to: detailChatCoordinator)
     }
     

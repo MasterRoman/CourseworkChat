@@ -23,15 +23,25 @@ struct ChatCellViewModel {
         self.lastMessageTime = lastMessageTime
     }
     
-    init(from chat : Chat) {
+    init(from chat : Chat,sender : Sender) {
         self.chatId = chat.chatBody.chatId
         self.icon = nil
-        self.dialogTitle = chat.senders.last!.displayName
+        
+        let senders = chat.senders
+        
+        if (senders.count > 2){
+            self.dialogTitle = senders.map({$0.displayName}).joined(separator: "+")
+        }
+        else
+        {
+            self.dialogTitle = senders.first(where: {$0.displayName != sender.displayName})!.displayName
+        }
+        
         self.lastMessagePreview = chat.chatBody.messages.last?.kind.getValue() ?? ""
-       
+        
         if (chat.chatBody.messages.last != nil){
-        let formatter = DateFormatter()
-        formatter.dateStyle = .short
+            let formatter = DateFormatter()
+            formatter.dateStyle = .short
             self.lastMessageTime = formatter.string(from:chat.chatBody.messages.last!.sentDate)
         }
         else

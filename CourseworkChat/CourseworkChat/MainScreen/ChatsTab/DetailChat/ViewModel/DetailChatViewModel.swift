@@ -30,6 +30,7 @@ class DetailChatViewModel : ViewModelType{
         let chat : Chat
         let reload : Observable<Void>
         let curSender : Sender
+        let title : String
     }
     
     private let backSubject = PublishSubject<Void>()
@@ -37,14 +38,14 @@ class DetailChatViewModel : ViewModelType{
     private let textSubject =  BehaviorSubject<String>(value: "")
     private let sendSubject = PublishSubject<Void>()
     
-    init(with chat : Chat,chatService : ChatService) {
+    init(with chat : Chat,title : String,chatService : ChatService) {
         self.chatService = chatService
         
         self.input = Input(back: backSubject.asObserver(), messageText: textSubject.asObserver(), send: sendSubject.asObserver())
         
         let sender = chatService.sender
         
-        self.output = Output(back: backSubject.asObservable(), chat: chat, reload: reloadSubject.asObservable(), curSender: sender)
+        self.output = Output(back: backSubject.asObservable(), chat: chat, reload: reloadSubject.asObservable(), curSender: sender, title: title)
         
         
         self.sendSubject.asObservable().subscribe(onNext: { [unowned self] in

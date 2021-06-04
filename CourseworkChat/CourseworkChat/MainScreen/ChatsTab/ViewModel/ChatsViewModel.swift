@@ -46,7 +46,7 @@ class ChatsViewModel : ViewModelType {
         var models : [ChatCellViewModel] = []
         
         for chat in chats {
-            let model = ChatCellViewModel(from: chat)
+            let model = ChatCellViewModel(from: chat, sender: chatService.sender)
             models.append(model)
         }
         
@@ -92,10 +92,11 @@ class ChatsViewModel : ViewModelType {
     
     private func getNewChat(){
         
-        self.chatService.getNewChat = { [unowned self] chat in
-            DispatchQueue.global().async(group: nil, qos: .utility, flags: .barrier, execute: {  //from other users
-                let model = ChatCellViewModel(from: chat)
-                chatsRelay.accept([model] + chatsRelay.value)
+        self.chatService.getNewChat = { [weak self] chat in
+            guard let self = self else {return}
+            DispatchQueue.global().async(group: nil, qos: .utility, flags: .barrier, execute: {   //from other users
+                let model = ChatCellViewModel(from: chat, sender: self.chatService.sender)
+                self.chatsRelay.accept([model] + self.chatsRelay.value)
             })
         }
         
@@ -103,7 +104,7 @@ class ChatsViewModel : ViewModelType {
             guard let self = self else {return}
             self.chatService.sendNewChat(chat: chat)
             DispatchQueue.global().async(group: nil, qos: .utility, flags: .barrier, execute: {
-                let model = ChatCellViewModel(from: chat)
+                let model = ChatCellViewModel(from: chat, sender: self.chatService.sender)
                 self.chatService.addChat(by: chat.chatBody.chatId , chat: chat)
                 self.chatsRelay.accept([model] + self.chatsRelay.value)
             })

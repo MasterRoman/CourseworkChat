@@ -28,6 +28,8 @@ class DetailChatViewController: MessagesViewController {
             layout.setMessageOutgoingAvatarSize(.zero)
         }
         
+        self.navigationItem.title = viewModel.output.title
+        
         setupBackButton()
         setupMainBindings()
         setupGestureRecognizers()
