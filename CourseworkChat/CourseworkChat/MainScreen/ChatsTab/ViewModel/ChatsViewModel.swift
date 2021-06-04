@@ -93,13 +93,13 @@ class ChatsViewModel : ViewModelType {
     private func getNewChat(){
         
         self.chatService.getNewChat = { [unowned self] chat in
-            DispatchQueue.global().async(group: nil, qos: .utility, flags: .barrier, execute: {
+            DispatchQueue.global().async(group: nil, qos: .utility, flags: .barrier, execute: {  //from other users
                 let model = ChatCellViewModel(from: chat)
                 chatsRelay.accept([model] + chatsRelay.value)
             })
         }
         
-        self.newChatSubject.asObservable().subscribe(onNext: { [weak self] chat in
+        self.newChatSubject.asObservable().subscribe(onNext: { [weak self] chat in  //from adding
             guard let self = self else {return}
             self.chatService.sendNewChat(chat: chat)
             DispatchQueue.global().async(group: nil, qos: .utility, flags: .barrier, execute: {

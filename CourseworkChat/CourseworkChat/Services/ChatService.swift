@@ -16,6 +16,8 @@ class ChatService{
     
     var getNewChat : ((_ chat : Chat) -> (Void))?
     var getNewMessages : ((_ messages : ChatBody) -> (Void))?
+    var update : (() -> ())?
+    
     private let queue = DispatchQueue.init(label: "chat.service", qos: .default, attributes: .concurrent, autoreleaseFrequency: .inherit, target: nil)
     
     init(networkManager : NetworkClient, userManager : UserManager) {
@@ -31,7 +33,9 @@ class ChatService{
     }
     
     func getChat(by id:UUID) -> Chat?{
-        return chatSource[id]
+        queue.sync {
+            return chatSource[id]
+        }
     }
     
     func addChat(by id:UUID,chat : Chat){
@@ -81,15 +85,15 @@ class ChatService{
     }
     
     @objc private func handleNewMessageNotification(notification: NSNotification){
-        queue.async { [self] in
-            if let chatBody = notification.object as? ChatBody {
-                let id = chatBody.chatId
-                queue.async(flags: .barrier, execute: {
-                    chatSource[id]?.chatBody.messages.append(contentsOf: chatBody.messages)
-                })
-                self.getNewMessages?(chatBody)
-            }
+        if let chatBody = notification.object as? ChatBody {
+            let id = chatBody.chatId
+            queue.async(flags: .barrier, execute: {
+                self.chatSource[id]?.chatBody.messages.append(contentsOf: chatBody.messages)
+                self.update?()
+            })
+            self.getNewMessages?(chatBody)
         }
+        
     }
     
     deinit {

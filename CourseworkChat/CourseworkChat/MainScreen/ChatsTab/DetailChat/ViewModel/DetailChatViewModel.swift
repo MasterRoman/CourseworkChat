@@ -41,7 +41,7 @@ class DetailChatViewModel : ViewModelType{
         self.chatService = chatService
         
         self.input = Input(back: backSubject.asObserver(), messageText: textSubject.asObserver(), send: sendSubject.asObserver())
-    
+        
         let sender = chatService.sender
         
         self.output = Output(back: backSubject.asObservable(), chat: chat, reload: reloadSubject.asObservable(), curSender: sender)
@@ -67,7 +67,7 @@ class DetailChatViewModel : ViewModelType{
         let date = Date()
         let textHash = text.hashValue
         let messageId = String(textHash) + String(date.hashValue)
-      
+        
         let message = Message(sender: chatService.sender, messageId: messageId, sentDate: date, kind: .text(text))
         
         chat.chatBody.messages.append(message)
@@ -80,6 +80,8 @@ class DetailChatViewModel : ViewModelType{
         }
     }
     
+    
+    
     private func registerNotification(){
         NotificationCenter.default.addObserver(self, selector: #selector(handleNotification), name: .newMessage, object: nil)
     }
@@ -89,11 +91,9 @@ class DetailChatViewModel : ViewModelType{
     }
     
     @objc private func handleNotification(notification: NSNotification){
-        DispatchQueue.main.async {
-            if let chat = notification.object as? ChatBody {
-                if chat.chatId == self.output.chat.chatBody.chatId{
-                    self.reloadSubject.onNext(())
-                }
+        if let chat = notification.object as? ChatBody {
+            if chat.chatId == self.output.chat.chatBody.chatId{
+                self.reloadSubject.onNext(())
             }
         }
     }

@@ -28,10 +28,9 @@ class DetailChatViewController: MessagesViewController {
             layout.setMessageOutgoingAvatarSize(.zero)
         }
         
-        
-        
         setupBackButton()
         setupMainBindings()
+        setupGestureRecognizers()
     }
     
     
@@ -70,6 +69,17 @@ class DetailChatViewController: MessagesViewController {
             .text.orEmpty
             .bind(to: viewModel.input.messageText)
             .disposed(by: disposeBag)
+    }
+    
+    private func setupGestureRecognizers(){
+        let hideGesture = UITapGestureRecognizer()
+        self.messagesCollectionView.addGestureRecognizer(hideGesture)
+
+        hideGesture.rx.event.subscribe({[weak self] _ in
+            guard let self = self else {return}
+            self.messageInputBar.inputTextView.resignFirstResponder()
+            self.messagesCollectionView.scrollToLastItem(animated: true)
+        }).disposed(by: disposeBag)
     }
 }
 
@@ -135,6 +145,7 @@ extension DetailChatViewController : MessagesDisplayDelegate,MessagesLayoutDeleg
                         layout.setMessageIncomingAvatarSize(.zero)
                         return
                     }
+                    return
                 }
             }
             

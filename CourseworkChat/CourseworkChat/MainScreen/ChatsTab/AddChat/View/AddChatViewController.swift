@@ -71,6 +71,17 @@ class AddChatViewController: UIViewController {
             .bind(to: viewModel.input.next)
             .disposed(by: disposeBag)
         
+        
+        viewModel.output.selectedShow
+            .map({$0.count > 0})
+            .subscribe(onNext: { enabled in
+                let alpha = enabled ? 1.0 : 0.8
+                rightBarButtonItem.tintColor =  UIColor.systemBlue.withAlphaComponent(CGFloat(alpha))
+                rightBarButtonItem.isEnabled = enabled
+                
+            })
+            .disposed(by: disposeBag)
+        
         self.navigationItem.rightBarButtonItem = rightBarButtonItem
     }
     
@@ -96,6 +107,8 @@ class AddChatViewController: UIViewController {
         tableView.rx.modelDeselected(ContactCellViewModel.self)
             .bind(to: viewModel.input.deselected)
             .disposed(by: disposeBag)
+        
+        
     }
     
 }
