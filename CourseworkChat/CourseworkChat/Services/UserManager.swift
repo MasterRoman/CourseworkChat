@@ -10,7 +10,7 @@ import Foundation
 class UserManager {
     
     init() {
-    
+        
     }
     
     func checkUserRegistration(login : String,password : String) ->Bool{
@@ -68,6 +68,19 @@ class UserManager {
             }
         }
         return nil
+    }
+    
+    func getLogin() -> String{
+        if ((UserDefaults.standard.object(forKey: "Users")) != nil){
+            let users : Array<Dictionary> = UserDefaults.standard.object(forKey: "Users") as! Array<Dictionary<String, Any>>
+            for user in users{
+                let localStatus : Bool = user["IsActive"] as! Bool
+                if (localStatus){
+                    return user["Login"] as! String
+                }
+            }
+        }
+        return ""
     }
     
     
