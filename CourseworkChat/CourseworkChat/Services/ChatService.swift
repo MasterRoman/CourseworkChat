@@ -27,6 +27,10 @@ class ChatService{
         return chatSource[id]
     }
     
+    func addChat(by id:UUID,chat : Chat){
+        self.chatSource[id] = chat
+    }
+    
     func sendMessage(message : ChatBody){
         do {
             try networkManager.send(message: .newMessage(message: message))

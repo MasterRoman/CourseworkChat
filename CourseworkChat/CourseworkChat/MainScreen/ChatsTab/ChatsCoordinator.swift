@@ -50,7 +50,10 @@ class ChatsCoordinator : BaseCoordinator<Void> {
                 self.showAddChatCoordinator()
                     .filter({$0 != nil})
                     .map({$0!})
-                    .bind(to: viewModel.input.newChat)
+                    .subscribe(onNext: { [weak viewModel] chat in
+                        viewModel?.input.newChat.onNext(chat)
+                        
+                    })
                     .disposed(by: self.disposeBag)
             }).disposed(by: disposeBag)
         

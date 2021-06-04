@@ -34,9 +34,6 @@ class DetailChatViewController: MessagesViewController {
         setupMainBindings()
     }
     
-    deinit {
-        print("DEINIT")
-    }
     
     private func setupBackButton(){
         

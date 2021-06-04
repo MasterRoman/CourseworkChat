@@ -40,4 +40,5 @@ class AddContactCoordinator : BaseCoordinator<AddContactCoordinatorResult> {
                 self?.navigationController.dismiss(animated: true)
             })
     }
+    
 }

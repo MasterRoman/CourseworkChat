@@ -41,9 +41,14 @@ struct ChatCellViewModel {
     }
     
     mutating func configure(with body: ChatBody){
-        let message = body.messages.last
-        self.lastMessagePreview = (message?.kind.getValue())!
-        self.lastMessageTime = getString(from: message!.sentDate)
+        let lastMessage = body.messages.last
+        guard let message = lastMessage else {
+            self.lastMessagePreview = "Empty"
+            self.lastMessageTime = "None"
+            return
+        }
+        self.lastMessagePreview = (message.kind.getValue())
+        self.lastMessageTime = getString(from: message.sentDate)
         
     }
     

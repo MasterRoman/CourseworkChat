@@ -90,7 +90,8 @@ class SessionService{
             }
             else
             {
-                
+    
+                //self.statusSubject.onNext(false)
             }
             
         }

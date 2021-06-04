@@ -102,8 +102,11 @@ class ChatsViewModel : ViewModelType {
         self.newChatSubject.asObservable().subscribe(onNext: { [weak self] chat in
             guard let self = self else {return}
             self.chatService.sendNewChat(chat: chat)
-            let model = ChatCellViewModel(from: chat)
-            self.chatsRelay.accept([model] + self.chatsRelay.value)
+            DispatchQueue.global().async(group: nil, qos: .utility, flags: .barrier, execute: {
+                let model = ChatCellViewModel(from: chat)
+                self.chatService.addChat(by: chat.chatBody.chatId , chat: chat)
+                self.chatsRelay.accept([model] + self.chatsRelay.value)
+            })
             
         })
         .disposed(by: disposeBag)

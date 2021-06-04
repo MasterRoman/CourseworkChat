@@ -61,7 +61,7 @@ class ChatsViewController: UIViewController {
         tableView.rx
             .itemSelected
             .subscribe(onNext: { [unowned self] (indexPath) in
-          //      self.tableView.deselectRow(at: indexPath, animated: true)
+                self.tableView.deselectRow(at: indexPath, animated: true)
             })
             .disposed(by: disposeBag)
         
