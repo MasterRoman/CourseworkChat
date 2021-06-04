@@ -8,15 +8,21 @@
 import Foundation
 
 class ChatService{
+    
+    var sender : Sender
     private let networkManager : NetworkClient
+    private let userManager : UserManager
     private var chatSource = Dictionary<UUID,Chat>()
     
     var getNewChat : ((_ chat : Chat) -> (Void))?
     var getNewMessages : ((_ messages : ChatBody) -> (Void))?
     private let queue = DispatchQueue.init(label: "chat.service", qos: .default, attributes: .concurrent, autoreleaseFrequency: .inherit, target: nil)
     
-    init(networkManager : NetworkClient) {
+    init(networkManager : NetworkClient, userManager : UserManager) {
         self.networkManager = networkManager
+        self.userManager = userManager
+        let login = userManager.getLogin()
+        self.sender = Sender(senderId: login, displayName: login)
         registerNotifications()
     }
     

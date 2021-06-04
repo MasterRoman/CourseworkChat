@@ -29,7 +29,7 @@ class MainCoordinator : BaseCoordinator<Void>{
         let contactsCoordinator = ContactsCoordinator(with: contactsNavigationController, contactService: contactService, sessionService: sessionService)
         
         let chatsNavigationController = UINavigationController()
-        let chatService = ChatService(networkManager: sessionService.networkManager)
+        let chatService = ChatService(networkManager: sessionService.networkManager, userManager: sessionService.userManager)
         chatsNavigationController.tabBarItem = UITabBarItem(title: "Chats", image: UIImage(systemName: "message"), selectedImage: UIImage(systemName: "message.fill"))
         let chatsCoordinator = ChatsCoordinator(with: chatsNavigationController, chatService:chatService, sessionService: sessionService, contactsService: contactService)
         

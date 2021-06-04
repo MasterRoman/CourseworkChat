@@ -29,6 +29,7 @@ class DetailChatViewModel : ViewModelType{
         let back : Observable<Void>
         let chat : Chat
         let reload : Observable<Void>
+        let curSender : Sender
     }
     
     private let backSubject = PublishSubject<Void>()
@@ -40,7 +41,10 @@ class DetailChatViewModel : ViewModelType{
         self.chatService = chatService
         
         self.input = Input(back: backSubject.asObserver(), messageText: textSubject.asObserver(), send: sendSubject.asObserver())
-        self.output = Output(back: backSubject.asObservable(), chat: chat, reload: reloadSubject.asObservable())
+    
+        let sender = chatService.sender
+        
+        self.output = Output(back: backSubject.asObservable(), chat: chat, reload: reloadSubject.asObservable(), curSender: sender)
         
         
         self.sendSubject.asObservable().subscribe(onNext: { [unowned self] in
@@ -63,7 +67,8 @@ class DetailChatViewModel : ViewModelType{
         let date = Date()
         let textHash = text.hashValue
         let messageId = String(textHash) + String(date.hashValue)
-        let message = Message(sender: chat.senders[0], messageId: messageId, sentDate: date, kind: .text(text))
+      
+        let message = Message(sender: chatService.sender, messageId: messageId, sentDate: date, kind: .text(text))
         
         chat.chatBody.messages.append(message)
         reloadSubject.onNext(())

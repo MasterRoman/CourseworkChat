@@ -63,8 +63,20 @@ class SessionService{
     }
     
     func logOut(){
+        sendOffline()
         userManager.logOut()
         statusSubject.onNext(false)
+    }
+    
+    private func sendOffline(){
+        do{
+            try self.networkManager.send(message: .offline(login: credentials!.login))
+        }
+        catch
+        {
+            print("error")
+            return
+        }
     }
     
     private func registerNotification(){

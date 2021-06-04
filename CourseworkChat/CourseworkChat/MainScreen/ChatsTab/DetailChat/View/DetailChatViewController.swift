@@ -77,7 +77,7 @@ class DetailChatViewController: MessagesViewController {
 
 extension DetailChatViewController : MessagesDataSource{
     func currentSender() -> SenderType {
-        return viewModel.output.chat.senders[0]
+        return viewModel.output.curSender
     }
     
     func messageForItem(at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> MessageType {
