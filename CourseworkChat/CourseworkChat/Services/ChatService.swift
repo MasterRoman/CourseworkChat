@@ -13,6 +13,7 @@ class ChatService{
     
     var getNewChat : ((_ chat : Chat) -> (Void))?
     var getNewMessages : ((_ messages : ChatBody) -> (Void))?
+    private let queue = DispatchQueue.init(label: "chat.service", qos: .default, attributes: .concurrent, autoreleaseFrequency: .inherit, target: nil)
     
     init(networkManager : NetworkClient) {
         self.networkManager = networkManager
@@ -60,9 +61,9 @@ class ChatService{
     }
     
     @objc private func handleNewChatNotification(notification: NSNotification){
-        DispatchQueue.global(qos: .utility).async { [self] in
+        queue.async { [self] in
             if let chat = notification.object as? Chat {
-                DispatchQueue.global().async(flags: .barrier, execute: {
+                queue.async(flags: .barrier, execute: {
                     let id = chat.chatBody.chatId
                     chatSource[id] = chat
                 })
@@ -74,10 +75,10 @@ class ChatService{
     }
     
     @objc private func handleNewMessageNotification(notification: NSNotification){
-        DispatchQueue.global(qos: .utility).async { [self] in
+        queue.async { [self] in
             if let chatBody = notification.object as? ChatBody {
                 let id = chatBody.chatId
-                DispatchQueue.global().async(flags: .barrier, execute: {
+                queue.async(flags: .barrier, execute: {
                     chatSource[id]?.chatBody.messages.append(contentsOf: chatBody.messages)
                 })
                 self.getNewMessages?(chatBody)
