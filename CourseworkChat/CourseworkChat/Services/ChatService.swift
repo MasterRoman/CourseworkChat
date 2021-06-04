@@ -36,10 +36,12 @@ class ChatService{
     }
     
     func sendNewChat(chat : Chat){
-        do {
-            try networkManager.send(message: .newChat(chat: chat))
-        } catch (let error) {
-            print(error)
+        DispatchQueue.global(qos: .utility).async {
+            do {
+                try self.networkManager.send(message: .newChat(chat: chat))
+            } catch (let error) {
+                print(error)
+            }
         }
     }
     

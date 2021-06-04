@@ -17,11 +17,14 @@ class ChatsViewModel : ViewModelType {
     private let disposeBag = DisposeBag()
     
     struct Input {
+        let add : AnyObserver<Void>
         let selected : AnyObserver<ChatCellViewModel?>
         let reload : AnyObserver<Void>
+        let newChat : AnyObserver<Chat>
     }
     
     struct Output {
+        let add : Observable<Void>
         let selectedhShow : Observable<ChatCellViewModel?>
         var chats : Observable<[ChatCellViewModel]>
         let reload : Observable<Void>
@@ -30,9 +33,11 @@ class ChatsViewModel : ViewModelType {
     
     private let chatService : ChatService
     
+    private let addSubject = PublishSubject<Void>()
     private let selectedCell = BehaviorSubject<ChatCellViewModel?>(value: nil)
     private var chatsRelay : BehaviorRelay<[ChatCellViewModel]>
     private let reloadSubject = PublishSubject<Void>()
+    private var newChatSubject = PublishSubject<Chat>()
     
     init(chatService : ChatService) {
         self.chatService = chatService
@@ -47,8 +52,8 @@ class ChatsViewModel : ViewModelType {
         
         self.chatsRelay = BehaviorRelay<[ChatCellViewModel]>(value: models)
         
-        self.input = Input(selected: selectedCell.asObserver(), reload: reloadSubject.asObserver())
-        self.output = Output(selectedhShow: selectedCell.asObservable(), chats: chatsRelay.asObservable(), reload: reloadSubject.asObservable())
+        self.input = Input(add: addSubject.asObserver(), selected: selectedCell.asObserver(), reload: reloadSubject.asObserver(), newChat: newChatSubject.asObserver())
+        self.output = Output(add: addSubject.asObservable(), selectedhShow: selectedCell.asObservable(), chats: chatsRelay.asObservable(), reload: reloadSubject.asObservable())
         
         
         
@@ -93,6 +98,15 @@ class ChatsViewModel : ViewModelType {
                 chatsRelay.accept([model] + chatsRelay.value)
             })
         }
+        
+        self.newChatSubject.asObservable().subscribe(onNext: { [weak self] chat in
+            guard let self = self else {return}
+            self.chatService.sendNewChat(chat: chat)
+            let model = ChatCellViewModel(from: chat)
+            self.chatsRelay.accept([model] + self.chatsRelay.value)
+            
+        })
+        .disposed(by: disposeBag)
     }
     
     private func getNewMessages(){

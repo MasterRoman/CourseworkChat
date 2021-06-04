@@ -44,6 +44,15 @@ class ChatsCoordinator : BaseCoordinator<Void> {
             }).disposed(by: disposeBag)
         
         
+        viewModel.output.add
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else {return}
+                self.showAddChatCoordinator()
+                    .filter({$0 != nil})
+                    .map({$0!})
+                    .bind(to: viewModel.input.newChat)
+                    .disposed(by: self.disposeBag)
+            }).disposed(by: disposeBag)
         
         
         self.navigationController.pushViewController(viewController, animated: true)
@@ -55,9 +64,18 @@ class ChatsCoordinator : BaseCoordinator<Void> {
         return coordinate(to: detailChatCoordinator)
     }
     
-    private func showAddChatCoordinator() -> Observable<Void> {
-        let addChatCoordinator = AddChatCoordinator(navigationController: navigationController, chatService : chatService, contactsService: contactsService)
+    private func showAddChatCoordinator() -> Observable<Chat?> {
+        let addChatCoordinator = AddChatCoordinator(navigationController: navigationController, contactsService: contactsService,sessionService : sessionService)
         return coordinate(to: addChatCoordinator)
+            .map({ result  in
+                switch result{
+                case .chat(let chat):
+                    return chat
+                case .cancel:
+                    return nil
+                }
+                
+            })
     }
     
 }

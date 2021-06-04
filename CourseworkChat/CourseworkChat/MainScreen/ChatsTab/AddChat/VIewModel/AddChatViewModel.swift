@@ -15,6 +15,7 @@ class AddChatViewModel : ViewModelType{
     var output: Output
     
     private let contactsService : ContactsService
+    private let sessionService : SessionService
     
     private let disposeBag = DisposeBag()
     
@@ -27,13 +28,13 @@ class AddChatViewModel : ViewModelType{
     
     struct Output {
         let back : Observable<Void>
-        var selectedhShow : Observable<[ContactCellViewModel]>
+        var selectedShow : Observable<[ContactCellViewModel]>
         var contacts : Observable<[ContactCellViewModel]>
         let next : Observable<Void>
+        let chat : Observable<Chat>
     }
     
-    
-    private let chatService : ChatService
+
     
     private let deselectedCell = BehaviorSubject<ContactCellViewModel?>(value: nil)
     private let selectedCell = BehaviorSubject<ContactCellViewModel?>(value: nil)
@@ -41,10 +42,11 @@ class AddChatViewModel : ViewModelType{
     private var contactsRelay : BehaviorRelay<[ContactCellViewModel]>
     private let nextSubject = PublishSubject<Void>()
     private let backSubject = PublishSubject<Void>()
+    private let chatSubject = PublishSubject<Chat>()
     
-    init(chatService : ChatService,contactsService : ContactsService) {
-        self.chatService = chatService
+    init(contactsService : ContactsService,sessionService : SessionService) {
         self.contactsService = contactsService
+        self.sessionService = sessionService
         
         let contacts = contactsService.getContacts()
         var models : [ContactCellViewModel] = []
@@ -55,10 +57,12 @@ class AddChatViewModel : ViewModelType{
         self.contactsRelay = BehaviorRelay<[ContactCellViewModel]>(value: models)
         
         self.input = Input(back: backSubject.asObserver(), selected: selectedCell.asObserver(), deselected: deselectedCell.asObserver(), next: nextSubject.asObserver())
-        self.output = Output(back: backSubject.asObservable(), selectedhShow: selectedCells.asObservable(), contacts: contactsRelay.asObservable(), next: nextSubject.asObservable())
+        self.output = Output(back: backSubject.asObservable(), selectedShow: selectedCells.asObservable(), contacts: contactsRelay.asObservable(), next: nextSubject.asObservable(), chat: chatSubject.asObservable())
         
         newSelectedCell()
         newDeselectedCell()
+        addNewChat()
+    
     }
     
     private func newSelectedCell(){
@@ -84,5 +88,24 @@ class AddChatViewModel : ViewModelType{
             }).disposed(by: disposeBag)
     }
     
+    private func addNewChat(){
+        output.next
+            .subscribe(onNext: { [unowned self] _ in
+                let cellSenders = selectedCells.value
+                let myLogin = sessionService.userManager.getUserInfo()!["Login"] as! String
+                var senders = [Sender]()
+                senders.append(Sender(senderId: myLogin, displayName: myLogin))
+                for sender in cellSenders{
+                    senders.append(Sender(senderId: sender.name, displayName: sender.name))
+                }
+                
+                let chat = Chat(senders: senders, chatBody: ChatBody(chatId: UUID(), messages: []))
+                chatSubject.onNext(chat)
+                chatSubject.onCompleted()
+            
+        })
+            .disposed(by: disposeBag)
+        
+    }
     
 }

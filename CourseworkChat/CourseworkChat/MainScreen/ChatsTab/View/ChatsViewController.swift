@@ -41,11 +41,7 @@ class ChatsViewController: UIViewController {
         self.navigationItem.title = "Chats"
         self.navigationItem.leftBarButtonItem = editButtonItem
         
-        let rightBarButtonItem = UIBarButtonItem.init()
-        rightBarButtonItem.style = .plain
-        rightBarButtonItem.image = UIImage(systemName: "square.and.pencil")
-        
-        self.navigationItem.rightBarButtonItem = rightBarButtonItem
+        setupAddButton()
         
     }
     
@@ -65,10 +61,25 @@ class ChatsViewController: UIViewController {
         tableView.rx
             .itemSelected
             .subscribe(onNext: { [unowned self] (indexPath) in
-                self.tableView.deselectRow(at: indexPath, animated: true)
+          //      self.tableView.deselectRow(at: indexPath, animated: true)
             })
             .disposed(by: disposeBag)
         
+    }
+    
+    private func setupAddButton(){
+        
+    
+        let rightBarButtonItem = UIBarButtonItem()
+        rightBarButtonItem.style = .plain
+        rightBarButtonItem.image = UIImage(systemName: "square.and.pencil")
+        
+        rightBarButtonItem.rx
+            .tap
+            .bind(to: viewModel.input.add)
+            .disposed(by: disposeBag)
+        
+        self.navigationItem.rightBarButtonItem = rightBarButtonItem
     }
     
     

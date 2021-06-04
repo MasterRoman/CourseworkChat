@@ -8,26 +8,39 @@
 import Foundation
 import RxSwift
 
-class AddChatCoordinator : BaseCoordinator<Void> {
+enum AddChatCoordinatorResult{
+    case chat(Chat)
+    case cancel
+}
+
+class AddChatCoordinator : BaseCoordinator<AddChatCoordinatorResult> {
     private let navigationController : UINavigationController
-    private let chatService : ChatService
     private let contactsService : ContactsService
+    private let sessionService : SessionService
     
-    init(navigationController : UINavigationController,chatService : ChatService,contactsService : ContactsService) {
+    init(navigationController : UINavigationController,contactsService : ContactsService,sessionService : SessionService) {
         self.navigationController = navigationController
-        self.chatService = chatService
         self.contactsService = contactsService
+        self.sessionService = sessionService
     }
     
-    override func start() -> Observable<Void> {
+    override func start() -> Observable<AddChatCoordinatorResult> {
         let viewController = AddChatViewController()
-        let viewModel = AddChatViewModel(chatService: chatService, contactsService: contactsService)
+        let viewModel = AddChatViewModel(contactsService: contactsService,sessionService : sessionService)
         viewController.viewModel = viewModel
         
-        self.navigationController.present(viewController, animated: true, completion: nil)
+        self.navigationController.pushViewController(viewController, animated: true)
+        
+        let cancel = viewModel.output.back.map{_ in AddChatCoordinatorResult.cancel}
+        let chat = viewModel.output.chat.map({AddChatCoordinatorResult.chat($0)})
         
         
-        
-        return viewModel.output.back
+        return Observable.merge(cancel,chat)
+            .take(1)
+            .do(onNext: { [weak self] _ in
+                self?.navigationController.popViewController(animated: true)
+            })
     }
 }
+
+

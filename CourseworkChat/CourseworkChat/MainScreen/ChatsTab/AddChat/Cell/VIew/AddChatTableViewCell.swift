@@ -40,17 +40,16 @@ class AddChatTableViewCell: UITableViewCell {
     }
     
     private func configure() {
-        userIconImageView.image = viewModel.icon
+       // userIconImageView.image = viewModel.icon
         nicknameLabel.text = viewModel.name
     
     }
     
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-    
+//    override func setSelected(_ selected: Bool, animated: Bool) {
+//        super.setSelected(selected, animated: animated)
+//        // Configure the view for the selected state
+//    }
+//
     static func getNibName()->String{
         return "AddChatTableViewCell"
     }

@@ -29,9 +29,15 @@ struct ChatCellViewModel {
         self.dialogTitle = chat.senders.last!.displayName
         self.lastMessagePreview = chat.chatBody.messages.last?.kind.getValue() ?? ""
        
+        if (chat.chatBody.messages.last != nil){
         let formatter = DateFormatter()
         formatter.dateStyle = .short
-        self.lastMessageTime = formatter.string(from:chat.chatBody.messages.last!.sentDate)
+            self.lastMessageTime = formatter.string(from:chat.chatBody.messages.last!.sentDate)
+        }
+        else
+        {
+            self.lastMessageTime = "NONE"
+        }
     }
     
     mutating func configure(with body: ChatBody){
