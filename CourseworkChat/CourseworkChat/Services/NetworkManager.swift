@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import BSDSocketWrapper
+import BSDSocketWrapperDevice
 
 protocol NetworkClient {
     func send(message : SendReceiveProtocol) throws
@@ -18,7 +18,7 @@ class NetworkManager : NetworkClient {
     let encoder = JSONEncoder()
     let decoder = JSONDecoder()
     
-    init(with address : String = "192.168.78.132",port : String = "2786") throws {
+    init(with address : String = "192.168.0.107",port : String = "2786") throws {
         self.socket = try ClientEndpoint(host: address, port: port, sockType: .stream)
         do {
             try socket.connect()
@@ -34,28 +34,39 @@ class NetworkManager : NetworkClient {
             while true {
                 do{
                     try self.socket.receive({ data in
+                        print(data.count)
                         if data.count > 0 {
-                            var result : SendReceiveProtocol
+                            var result : [SendReceiveProtocol]
                             do {
-                                result = try self.decoder.decode(SendReceiveProtocol.self, from: data)
-                                switch result{
-                                case .checkLogin(login: let login):
-                                    NotificationCenter.default.post(name: .checkLogin, object: login)
-                                case .registration(credentials : let credentials):
-                                    NotificationCenter.default.post(name: .registration, object: credentials)
-                                case .authorization(credentials : let credentials):
-                                    NotificationCenter.default.post(name: .authorization, object: credentials)
+                                result = try self.decoder.decode([SendReceiveProtocol].self, from: data)
+                                for res in result{
+                                switch res{
                                 case .newChat(chat: let chat):
                                     NotificationCenter.default.post(name: .newChat, object: chat)
+                                    print("chat")
+                                case .checkLogin(login: let login):
+                                    NotificationCenter.default.post(name: .checkLogin, object: login)
+                                    print("login")
+                                case .registration(credentials : let credentials):
+                                    NotificationCenter.default.post(name: .registration, object: credentials)
+                                    print("reg")
+                                case .authorization(credentials : let credentials):
+                                    NotificationCenter.default.post(name: .authorization, object: credentials)
+                                    print("auth")
                                 case .newMessage(message: let message):
                                     NotificationCenter.default.post(name: .newMessage, object: message)
+                                    print("message")
                                 case .newContact(login: _,contact : let contact):
                                     NotificationCenter.default.post(name: .newContact, object: contact)
+                                    print("contact")
                                 case .offline(login: let login):
                                     NotificationCenter.default.post(name: .offline, object: login)
+                                    print("offl")
+                                }
                                 }
                                 
-                            } catch (_) {
+                            } catch (let error) {
+                                print(error)
                                 
                             }
                         } else

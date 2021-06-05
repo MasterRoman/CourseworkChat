@@ -30,11 +30,19 @@ struct ChatCellViewModel {
         let senders = chat.senders
         
         if (senders.count > 2){
-            self.dialogTitle = senders.map({$0.displayName}).joined(separator: "+")
+            self.dialogTitle = senders.map({$0.senderId}).joined(separator: "+")
         }
         else
         {
-            self.dialogTitle = senders.first(where: {$0.displayName != sender.displayName})!.displayName
+            var title : String
+            if senders.first?.senderId == sender.senderId{
+                title = senders.last!.senderId
+            }
+            else
+            {
+                title = senders.first!.senderId
+            }
+            self.dialogTitle = title
         }
         
         self.lastMessagePreview = chat.chatBody.messages.last?.kind.getValue() ?? ""

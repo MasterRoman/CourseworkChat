@@ -94,12 +94,6 @@ class AddChatViewController: UIViewController {
                 cell.viewModel = viewModel
             }.disposed(by: disposeBag)
         
-        tableView.rx.itemSelected
-            .subscribe(onNext: { [unowned self] (indexPath) in
-             //   self.tableView.deselectRow(at: indexPath, animated: true)
-            })
-            .disposed(by: disposeBag)
-        
         tableView.rx.modelSelected(ContactCellViewModel.self)
             .bind(to: viewModel.input.selected)
             .disposed(by: disposeBag)

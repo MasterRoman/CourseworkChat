@@ -95,7 +95,7 @@ struct Message : MessageType,Codable {
     
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(Sender(senderId: sender.senderId, displayName: sender.displayName), forKey: .sender)
+        try container.encode(Sender(senderId: sender.senderId, displayName: sender.senderId), forKey: .sender)
         try container.encode(messageId, forKey: .messageId)
         try container.encode(sentDate, forKey: .sentDate)
         try container.encode(kind, forKey: .kind)
