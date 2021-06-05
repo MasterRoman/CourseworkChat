@@ -80,7 +80,7 @@ class ChatsViewModel : ViewModelType {
                     chats[index] = chatCell
                 }
                 
-                DispatchQueue.main.async(group: nil, qos: .userInteractive, flags: .barrier, execute: {
+                DispatchQueue.main.async(execute: {
                     self.chatsRelay.accept(chats)
                 })
             }catch{
@@ -94,20 +94,18 @@ class ChatsViewModel : ViewModelType {
         
         self.chatService.getNewChat = { [weak self] chat in
             guard let self = self else {return}
-            DispatchQueue.global().async(group: nil, qos: .utility, flags: .barrier, execute: {   //from other users
-                let model = ChatCellViewModel(from: chat, sender: self.chatService.sender)
-                self.chatsRelay.accept([model] + self.chatsRelay.value)
-            })
+            let model = ChatCellViewModel(from: chat, sender: self.chatService.sender)
+            self.chatsRelay.accept([model] + self.chatsRelay.value)
         }
         
         self.newChatSubject.asObservable().subscribe(onNext: { [weak self] chat in  //from adding
             guard let self = self else {return}
             self.chatService.sendNewChat(chat: chat)
-            DispatchQueue.global().async(group: nil, qos: .utility, flags: .barrier, execute: {
-                let model = ChatCellViewModel(from: chat, sender: self.chatService.sender)
-                self.chatService.addChat(by: chat.chatBody.chatId , chat: chat)
-                self.chatsRelay.accept([model] + self.chatsRelay.value)
-            })
+            
+            let model = ChatCellViewModel(from: chat, sender: self.chatService.sender)
+            self.chatService.addChat(by: chat.chatBody.chatId , chat: chat)
+            self.chatsRelay.accept([model] + self.chatsRelay.value)
+            
             
         })
         .disposed(by: disposeBag)
@@ -123,9 +121,7 @@ class ChatsViewModel : ViewModelType {
                 chats[index] = chat
             }
             
-            DispatchQueue.main.async(group: nil, qos: .userInteractive, flags: .barrier, execute: {
-                self.chatsRelay.accept(chats)
-            })
+            self.chatsRelay.accept(chats)
         }
     }
     

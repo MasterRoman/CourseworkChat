@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import BSDSocketWrapperDevice
+import BSDSocketWrapper
 
 protocol NetworkClient {
     func send(message : SendReceiveProtocol) throws
