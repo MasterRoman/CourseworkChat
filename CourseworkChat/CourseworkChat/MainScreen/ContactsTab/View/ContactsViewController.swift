@@ -52,7 +52,7 @@ class ContactsViewController: UIViewController {
         self.navigationItem.hidesSearchBarWhenScrolling = true
     
         
-        self.searchController.searchBar.delegate = self //MARK: FIX
+        self.searchController.searchBar.delegate = self 
     }
     
     private func setupAddButton(){

@@ -22,7 +22,7 @@ class UserInfoHeaderView: UIView {
         
         self.profileImageView.layer.masksToBounds = false
         self.profileImageView.contentMode = .scaleAspectFill
-        self.profileImageView.layer.cornerRadius = 100 / 2.0 //MARK: !!!!
+        self.profileImageView.layer.cornerRadius = 100 / 2.0
         self.profileImageView.clipsToBounds = true
         self.profileImageView.translatesAutoresizingMaskIntoConstraints = false
        
@@ -41,8 +41,8 @@ class UserInfoHeaderView: UIView {
         NSLayoutConstraint.activate([
             self.profileImageView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             self.profileImageView.topAnchor.constraint(equalTo: self.topAnchor , constant: 12),
-            self.profileImageView.widthAnchor.constraint(equalToConstant: 100),  //MARK: !!!!
-            self.profileImageView.heightAnchor.constraint(equalToConstant: 100) //MARK: !!!!
+            self.profileImageView.widthAnchor.constraint(equalToConstant: 100),
+            self.profileImageView.heightAnchor.constraint(equalToConstant: 100) 
         ])
         
 
