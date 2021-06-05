@@ -29,8 +29,8 @@ class RegistrationCoordinator : BaseCoordinator<Void>{
         viewModel.output.isSuccess        ////////////FIX!
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [weak self,weak viewModel] success in
+                guard let self = self else {return}
                 if (success){
-                    guard let self = self else {return}
                     let passwordViewController = RegistrationViewController(with: .password)
                     let passwordViewModel = RegistrationPasswordViewModel(with: viewModel!.login ,sessionService: self.sessionService)
                     passwordViewController.viewModel = passwordViewModel
@@ -44,17 +44,28 @@ class RegistrationCoordinator : BaseCoordinator<Void>{
                     passwordViewModel.output.isSuccess
                         .observeOn(MainScheduler.instance)
                         .subscribe(onNext: { [weak self,weak viewModel] success in
+                            guard let self = self else {return}
                             if (success){
-                                guard let self = self else {return}
                                 self.navigationController.isNavigationBarHidden = true
                                 self.navigationController.popToRootViewController(animated: true)
                                 viewModel?.input.back.onNext(())
                             }
+                            else
+                            {
+                                let alert = UIViewController().makeAlert(with: "Inappropriate password")
+                                self.navigationController.present(alert, animated: true, completion: nil)
+                            }
                         }).disposed(by: self.disposeBag)
+                }
+                else
+                {
+                    let alert = UIViewController().makeAlert(with: "Busy login")
+                    self.navigationController.present(alert, animated: true, completion: nil)
                 }
             }).disposed(by: disposeBag)
         
         
         return viewModel.output.back
     }
+  
 }

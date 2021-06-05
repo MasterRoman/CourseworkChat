@@ -21,6 +21,7 @@ class SessionService{
         return statusSubject.asObservable()
     }
     
+    var error : (() -> ())?
     
     
     init(userManager : UserManager,networkManager : NetworkClient) {
@@ -106,7 +107,7 @@ class SessionService{
             }
             else
             {
-                
+                self.error?()
                 //self.statusSubject.onNext(false)
             }
             
@@ -116,5 +117,6 @@ class SessionService{
     
     deinit {
         removeNotification()
+        self.error = nil
     }
 }

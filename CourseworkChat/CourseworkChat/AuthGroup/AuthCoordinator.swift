@@ -28,6 +28,14 @@ class AuthCoordinator : BaseCoordinator<Void>{
                 guard let self = self else {return}
                 self.showRegistrationCoordinator(with: self.navigationController)
             }).disposed(by: disposeBag)
+        
+        viewModel.output.success
+            .filter({!$0})
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                let alert = UIViewController().makeAlert(with: "Wrong login or password")
+                self?.navigationController.present(alert, animated: true, completion: nil)
+            }).disposed(by: disposeBag)
     
         self.navigationController.pushViewController(viewController, animated: true)
         return self.sessionService.status.filter {$0!}.map { _ in Void() }.take(1)
@@ -43,4 +51,5 @@ class AuthCoordinator : BaseCoordinator<Void>{
             })
             .disposed(by: self.disposeBag)
     }
+    
 }

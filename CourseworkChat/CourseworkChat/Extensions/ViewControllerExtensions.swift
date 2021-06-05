@@ -11,8 +11,8 @@ import UIKit
 extension UIViewController{
     func makeAlert(with message : String) -> UIAlertController{
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "Ok", style: .default, handler: {_ in
-            alert.dismiss(animated: true, completion: nil)
+        let okAction = UIAlertAction(title: "Ok", style: .default, handler: { [weak alert]  _ in
+            alert?.dismiss(animated: true, completion: nil)
         })
         
         alert.addAction(okAction)

@@ -49,7 +49,7 @@ class AuthorizationViewModel : ViewModelType {
     private let loginSubject = BehaviorSubject<String>(value: "")
     private let passwordSubject = BehaviorSubject<String>(value: "")
     private let enableSubject = PublishSubject<Bool>()
-    private let successAuthorizationSubject =  BehaviorRelay<Bool>(value: false)
+    private let successAuthorizationSubject =  PublishSubject<Bool>()
     
     init(with sessionService : SessionService) {
         self.sessionService = sessionService
@@ -92,6 +92,18 @@ class AuthorizationViewModel : ViewModelType {
             
         }).disposed(by: disposeBag)
         
+        registerOnError()
+        
+    }
+    
+    private func registerOnError(){
+        self.sessionService.error = { [weak self] in
+            self?.successAuthorizationSubject.onNext(false)
+        }
+    }
+    
+    deinit {
+        self.sessionService.error = nil
     }
     
 }
