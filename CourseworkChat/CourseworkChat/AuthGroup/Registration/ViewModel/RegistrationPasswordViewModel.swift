@@ -22,7 +22,7 @@ class RegistrationPasswordViewModel : RegistrationViewModelType{
     
     private let nextSubject = PublishSubject<Void>()
     private let textSubject = BehaviorSubject<String>(value: "")
-    private let successRelay = BehaviorRelay<Bool>(value: false)
+    private let successSubject = PublishSubject<Bool>()
     private let backSubject = PublishSubject<Void>()
     
     init(with login : String,sessionService : SessionService) {
@@ -30,7 +30,7 @@ class RegistrationPasswordViewModel : RegistrationViewModelType{
         self.sessionService = sessionService
         
         
-        self.output = Output(nextShow: nextSubject.asObservable(), isSuccess: successRelay.asObservable(), back: backSubject.asObservable())
+        self.output = Output(nextShow: nextSubject.asObservable(), isSuccess: successSubject.asObservable(), back: backSubject.asObservable())
         
         self.input = Input(next: nextSubject.asObserver(), text: textSubject.asObserver(), back: backSubject.asObserver())
         
@@ -66,8 +66,11 @@ class RegistrationPasswordViewModel : RegistrationViewModelType{
             do{
             let password = try self.textSubject.value()
             if (credentials.password == password){
-                self.successRelay.accept(true)
+                self.successSubject.onNext(true)
                 self.sessionService.userManager.registerUser(login: login, password: credentials.password, isActive: false)
+            }
+            else {
+                self.successSubject.onNext(false)
             }
             }catch (let error){
                 print(error)

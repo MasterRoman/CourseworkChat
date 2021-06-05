@@ -22,7 +22,7 @@ class RegistrationLoginViewModel : RegistrationViewModelType{
     
     private let nextSubject = PublishSubject<Void>()
     private let textSubject = BehaviorSubject<String>(value: "")
-    private let successRelay = BehaviorRelay<Bool>(value: false)
+    private let successSubject = PublishSubject<Bool>()
     private let errorSubject = BehaviorSubject<String>(value: "")
     private let backSubject = PublishSubject<Void>()
     
@@ -35,7 +35,7 @@ class RegistrationLoginViewModel : RegistrationViewModelType{
         self.input = Input(next: nextSubject.asObserver(), text: textSubject.asObserver(), back: backSubject.asObserver())
         
        
-        self.output = Output(nextShow: nextSubject.asObservable(), isSuccess: successRelay.asObservable(), back: backSubject.asObservable())
+        self.output = Output(nextShow: nextSubject.asObservable(), isSuccess: successSubject.asObservable(), back: backSubject.asObservable())
         
         self.output.nextShow.subscribe(onNext: { [weak self] in
             guard let self = self else {return}
@@ -68,11 +68,11 @@ class RegistrationLoginViewModel : RegistrationViewModelType{
         if let login = notification.object as? String {
             if login != "BUSY"{
                 self.login = login
-                self.successRelay.accept(true)
+                self.successSubject.onNext(true)
             }
             else
             {
-                self.successRelay.accept(false)
+                self.successSubject.onNext(false)
             }
             
         }
