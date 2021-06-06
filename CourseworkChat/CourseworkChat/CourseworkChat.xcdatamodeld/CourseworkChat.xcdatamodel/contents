@@ -1,15 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="19E266" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="Chat" representedClassName="Chat" syncable="YES" codeGenerationType="category">
+    <entity name="Chats" representedClassName="Chats" syncable="YES">
         <attribute name="body" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="senders" optional="YES" attributeType="Binary"/>
+        <relationship name="user" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="User" inverseName="chats" inverseEntity="User"/>
     </entity>
-    <entity name="Contact" representedClassName="Contact" syncable="YES" codeGenerationType="category">
+    <entity name="Contacts" representedClassName="Contacts" syncable="YES">
         <attribute name="login" optional="YES" attributeType="String"/>
+        <relationship name="user" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="User" inverseName="contacts" inverseEntity="User"/>
+    </entity>
+    <entity name="User" representedClassName="User" syncable="YES">
+        <attribute name="loginUser" optional="YES" attributeType="String"/>
+        <relationship name="chats" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Chats" inverseName="user" inverseEntity="Chats"/>
+        <relationship name="contacts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Contacts" inverseName="user" inverseEntity="Contacts"/>
     </entity>
     <elements>
-        <element name="Contact" positionX="-94.02734375" positionY="-22.97265625" width="128" height="58"/>
-        <element name="Chat" positionX="91.98046875" positionY="-33.99609375" width="128" height="88"/>
+        <element name="Chats" positionX="241.98046875" positionY="-64.00390625" width="128" height="103"/>
+        <element name="Contacts" positionX="-94.02734375" positionY="-22.97265625" width="128" height="73"/>
+        <element name="User" positionX="77.05078125" positionY="131.96875" width="128" height="88"/>
     </elements>
 </model>
