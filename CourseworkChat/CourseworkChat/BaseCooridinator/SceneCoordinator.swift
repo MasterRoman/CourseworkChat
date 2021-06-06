@@ -11,9 +11,11 @@ import RxSwift
 class SceneCoordinator: BaseCoordinator<Void> {
     
     private let window: UIWindow
+    private let storageService : StorageService
     
-    init(window: UIWindow) {
+    init(window: UIWindow,storageService : StorageService) {
         self.window = window
+        self.storageService = storageService
     }
     
     override func start() -> Observable<Void> {
@@ -60,7 +62,7 @@ class SceneCoordinator: BaseCoordinator<Void> {
     }
     
     private func showMainCoordinator(with navigationController : UINavigationController,sessionService : SessionService){
-        let mainCoordinator = MainCoordinator(with: navigationController, sessionService: sessionService)
+        let mainCoordinator = MainCoordinator(with: navigationController, sessionService: sessionService, storageService: storageService)
         coordinate(to: mainCoordinator)
             .observeOn(MainScheduler.asyncInstance)
             .subscribe(onNext: {

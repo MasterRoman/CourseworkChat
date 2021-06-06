@@ -11,11 +11,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
     var coordinator : SceneCoordinator?
+    private var storageService : StorageService?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         let window = UIWindow(windowScene: scene as! UIWindowScene)
         
-        coordinator = SceneCoordinator(window: window)
+        self.storageService = StorageService()
+        
+        coordinator = SceneCoordinator(window: window, storageService: storageService!)
         coordinator?.start()
         
         self.window = window
@@ -51,7 +54,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // to restore the scene back to its current state.
 
         // Save changes in the application's managed object context when the application transitions to the background.
-        (UIApplication.shared.delegate as? AppDelegate)?.saveContext()
+        storageService?.saveContext()
     }
 
 

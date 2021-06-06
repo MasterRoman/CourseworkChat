@@ -12,10 +12,12 @@ class MainCoordinator : BaseCoordinator<Void>{
     
     private let navigationController : UINavigationController
     private let sessionService : SessionService
+    private let storageService : StorageService
     
-    init(with navigationController : UINavigationController,sessionService : SessionService) {
+    init(with navigationController : UINavigationController,sessionService : SessionService,storageService : StorageService) {
         self.navigationController = navigationController
         self.sessionService = sessionService
+        self.storageService = storageService
     }
     
     override func start() -> Observable<Void> {
@@ -29,7 +31,7 @@ class MainCoordinator : BaseCoordinator<Void>{
         let contactsCoordinator = ContactsCoordinator(with: contactsNavigationController, contactService: contactService, sessionService: sessionService)
         
         let chatsNavigationController = UINavigationController()
-        let chatService = ChatService(networkManager: sessionService.networkManager, userManager: sessionService.userManager)
+        let chatService = ChatService(networkManager: sessionService.networkManager, userManager: sessionService.userManager, storageService: storageService)
         chatsNavigationController.tabBarItem = UITabBarItem(title: "Chats", image: UIImage(systemName: "message"), selectedImage: UIImage(systemName: "message.fill"))
         let chatsCoordinator = ChatsCoordinator(with: chatsNavigationController, chatService:chatService, sessionService: sessionService, contactsService: contactService)
         

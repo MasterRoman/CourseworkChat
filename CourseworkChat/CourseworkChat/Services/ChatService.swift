@@ -12,17 +12,30 @@ class ChatService{
     var sender : Sender
     private let networkManager : NetworkClient
     private let userManager : UserManager
-    private var chatSource = Dictionary<UUID,Chat>()
+    private let storageService : StorageService
+    private var chatSource : Dictionary<UUID,Chat>
     
     var getNewChat : ((_ chat : Chat) -> (Void))?
     var getNewMessages : ((_ messages : ChatBody) -> (Void))?
     
     private let queue = DispatchQueue.init(label: "chat.service", qos: .utility, attributes: .concurrent, autoreleaseFrequency: .inherit, target: nil)
     
-    init(networkManager : NetworkClient, userManager : UserManager) {
+    init(networkManager : NetworkClient, userManager : UserManager,storageService : StorageService) {
         self.networkManager = networkManager
         self.userManager = userManager
+        self.storageService = storageService
+        
         let login = userManager.getLogin()
+        
+        let chats = storageService.getChats()
+        if let chats = chats{
+            self.chatSource = chats
+        }
+        else
+        {
+            self.chatSource = Dictionary<UUID,Chat>()
+        }
+        
         self.sender = Sender(senderId: login, displayName: login)
         registerNotifications()
     }
@@ -77,6 +90,10 @@ class ChatService{
             self.chatSource[id] = chat
             
             self.getNewChat?(chat)
+            
+            DispatchQueue.global(qos: .background).async {
+                self.storageService.addChat(chat: chat)
+            }
         }
         
         
