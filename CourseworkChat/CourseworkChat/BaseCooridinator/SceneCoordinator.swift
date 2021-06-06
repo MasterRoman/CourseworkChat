@@ -53,7 +53,7 @@ class SceneCoordinator: BaseCoordinator<Void> {
     private func showAuthCoordinator(with navigationController : UINavigationController,sessionService : SessionService){
         let authCoordinator = AuthCoordinator(with: navigationController,sessionService: sessionService)
         coordinate(to: authCoordinator)
-            .observeOn(MainScheduler.asyncInstance)
+            .observeOn(MainScheduler.instance)
             .subscribe(onNext: {
                 navigationController.viewControllers.removeFirst()
             
@@ -64,7 +64,7 @@ class SceneCoordinator: BaseCoordinator<Void> {
     private func showMainCoordinator(with navigationController : UINavigationController,sessionService : SessionService){
         let mainCoordinator = MainCoordinator(with: navigationController, sessionService: sessionService, storageService: storageService)
         coordinate(to: mainCoordinator)
-            .observeOn(MainScheduler.asyncInstance)
+            .observeOn(MainScheduler.instance)
             .subscribe(onNext: {
                 navigationController.viewControllers.removeFirst()
             })

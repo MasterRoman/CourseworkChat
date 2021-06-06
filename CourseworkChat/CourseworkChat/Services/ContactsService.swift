@@ -10,13 +10,25 @@ import Foundation
 class ContactsService{
     private let userManager : UserManager
     private let networkManager : NetworkClient
-    private var contactsSource = Dictionary<String,Contact>()
+    private let storageService : StorageService
+    private var contactsSource : Dictionary<String,Contact>
     
     var getNewContact : ((_ contact : Contact) -> (Void))?
     
-    init(with networkManager : NetworkClient,userManager : UserManager) {
+    init(with networkManager : NetworkClient,userManager : UserManager,storageService : StorageService) {
         self.networkManager = networkManager
         self.userManager = userManager
+        self.storageService = storageService
+        
+        
+        let contacts = storageService.getContacts()
+        if let contacts = contacts{
+            self.contactsSource = contacts
+        }
+        else
+        {
+            self.contactsSource = Dictionary<String,Contact>()
+        }
         
         registerNotifications()
     }
@@ -35,6 +47,7 @@ class ContactsService{
             let localLogin = user?["Login"] as! String
             let contact = Contact(with: localLogin, name: nil, surname: nil)
             try networkManager.send(message: .newContact(login: login, contact: contact))
+            
         } catch (let error) {
             print(error)
         }
@@ -49,19 +62,24 @@ class ContactsService{
     }
     
     @objc private func handleNewContactNotification(notification: NSNotification){
-        DispatchQueue.global(qos: .utility).async { [self] in
-            if let contact = notification.object as? Contact {
-                DispatchQueue.global().async(flags: .barrier, execute: {
-                    let login = contact.login
-                    contactsSource[login] = contact
-                })
-                self.getNewContact?(contact)
-            }
+        
+        if let contact = notification.object as? Contact {
+            DispatchQueue.global().async(flags: .barrier, execute: { [self] in
+                let login = contact.login
+                contactsSource[login] = contact
+            })
+            self.getNewContact?(contact)
+    
+            self.storageService.addContact(contact: contact)
+        
         }
         
         
+        
+        
+        
     }
-
+    
     deinit {
         removeNotifications()
     }

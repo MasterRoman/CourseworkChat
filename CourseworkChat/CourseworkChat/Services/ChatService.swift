@@ -27,6 +27,9 @@ class ChatService{
         
         let login = userManager.getLogin()
         
+        
+        storageService.login = login
+        storageService.addUser()
         let chats = storageService.getChats()
         if let chats = chats{
             self.chatSource = chats
@@ -62,6 +65,10 @@ class ChatService{
         } catch (let error) {
             print(error)
         }
+        
+        
+        self.storageService.addMessages(messages: message)
+        
     }
     
     func sendNewChat(chat : Chat){
@@ -72,6 +79,10 @@ class ChatService{
                 print(error)
             }
         }
+        
+        
+        self.storageService.addChat(chat: chat)
+        
     }
     
     private func registerNotifications(){
@@ -87,13 +98,13 @@ class ChatService{
     @objc private func handleNewChatNotification(notification: NSNotification){
         if let chat = notification.object as? Chat {
             let id = chat.chatBody.chatId
-            self.chatSource[id] = chat
-            
+            queue.async(flags: .barrier, execute: {
+                self.chatSource[id] = chat
+            })
             self.getNewChat?(chat)
             
-            DispatchQueue.global(qos: .background).async {
-                self.storageService.addChat(chat: chat)
-            }
+            self.storageService.addChat(chat: chat)
+            
         }
         
         
@@ -107,6 +118,8 @@ class ChatService{
                 self.chatSource[id]?.chatBody.messages.append(contentsOf: chatBody.messages)
             })
             self.getNewMessages?(chatBody)
+            
+            self.storageService.addMessages(messages: chatBody)
             
         }
         
