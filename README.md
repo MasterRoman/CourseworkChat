@@ -1,6 +1,6 @@
 # CourseworkChat
 
-In this course work I worked with:
+In this coursework I worked with:
   - MVVM with Coordinators
   - RxSwift
   - Client - server architecture (Server - https://github.com/MasterRoman/ChatServer)
